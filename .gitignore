@@ -1,0 +1,6 @@
+kaggle.json
+*.pickle
+__pycache__/
+*.h5
+*.keras
+*.zip

@@ -110,4 +110,3 @@ for uploaded_file in uploaded_files:
     except Exception as e:
         st.error(f"Error processing {uploaded_file.name}: {e}")
 
-st.caption("For demonstration purposes only. Not for medical diagnosis.")

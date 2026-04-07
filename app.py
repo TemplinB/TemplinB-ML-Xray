@@ -1,7 +1,14 @@
 import json
 from pathlib import Path
 
-import cv2
+def prepare_uploaded_image(uploaded_file, image_size: int):
+    image = Image.open(uploaded_file).convert("L")  # grayscale
+    image = image.resize((image_size, image_size))
+
+    image_np = np.array(image).astype(np.float32) / 255.0
+    reshaped = image_np.reshape(1, image_size, image_size, 1)
+
+    return image, reshaped
 import numpy as np
 import streamlit as st
 import tensorflow as tf

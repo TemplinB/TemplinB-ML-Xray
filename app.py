@@ -136,7 +136,7 @@ def predict_image(model, model_type, image, metadata):
 # -----------------------------
 # UI
 # -----------------------------
-st.title("🩺 Pneumonia Detection Dashboard")
+st.title("Pneumonia Detection Dashboard")
 st.write(
     "Upload a chest X-ray image and the model will predict whether it shows **Pneumonia** or **Normal**."
 )

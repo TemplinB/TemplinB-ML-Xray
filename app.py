@@ -1,4 +1,6 @@
 import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
 import json
 from pathlib import Path
 
@@ -6,8 +8,6 @@ import numpy as np
 import streamlit as st
 from PIL import Image
 from tensorflow.keras.models import load_model
-
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 MODEL_PATH = "artifacts/pneumonia_model.keras"
 METADATA_PATH = "artifacts/model_metadata.json"
@@ -28,7 +28,7 @@ def prepare_uploaded_image(uploaded_file, image_size: int):
     image = Image.open(uploaded_file).convert("L")
     resized_image = image.resize((image_size, image_size))
 
-    image_np = np.array(resized_image).astype(np.float32) / 255.0
+    image_np = np.array(resized_image, dtype=np.float32) / 255.0
     reshaped = image_np.reshape(1, image_size, image_size, 1)
 
     return image, reshaped
@@ -70,8 +70,12 @@ if missing_files:
         st.code(file)
     st.stop()
 
-model = load_trained_model(MODEL_PATH)
-metadata = load_metadata(METADATA_PATH)
+try:
+    model = load_trained_model(MODEL_PATH)
+    metadata = load_metadata(METADATA_PATH)
+except Exception as e:
+    st.error(f"Error loading model or metadata: {e}")
+    st.stop()
 
 image_size = metadata.get("img_size", [224, 224])[0]
 class_names = metadata.get("class_names", ["NORMAL", "PNEUMONIA"])

@@ -1,9 +1,0 @@
-model.save("pneumonia_model.keras")
-
-import json
-metadata = {
-    "img_size": [224, 224],
-    "class_names": ["NORMAL", "PNEUMONIA"]
-}
-with open("model_metadata.json", "w") as f:
-    json.dump(metadata, f)

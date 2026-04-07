@@ -111,7 +111,7 @@ def predict_image(model, processed_image, class_names):
 # =========================
 # Sidebar
 # =========================
-st.sidebar.title("🩻 Upload X-Ray Images")
+st.sidebar.title("Upload X-Ray Images")
 st.sidebar.markdown("Upload one or more chest X-ray images below.")
 
 uploaded_files = st.sidebar.file_uploader(

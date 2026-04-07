@@ -1,186 +1,219 @@
-import os
 import json
+from pathlib import Path
+
+import cv2
 import numpy as np
-from PIL import Image
 import streamlit as st
+import tensorflow as tf
+from tensorflow.keras.models import load_model
+from PIL import Image
 
-# Try TensorFlow/Keras first
-USE_TF = False
-USE_SKLEARN = False
-
-try:
-    from tensorflow.keras.models import load_model
-    USE_TF = True
-except Exception:
-    pass
-
-try:
-    import joblib
-    USE_SKLEARN = True
-except Exception:
-    pass
-
-
+# =========================
+# Page Config
+# =========================
 st.set_page_config(
-    page_title="Pneumonia Detection Dashboard",
-    page_icon="🩺",
-    layout="centered"
+    page_title="Pneumonia Detection App",
+    page_icon="🩻",
+    layout="wide"
 )
 
-
-# -----------------------------
-# Helper functions
-# -----------------------------
-def load_metadata():
-    """
-    Optional metadata file to store image size, class names, etc.
-    """
-    metadata_path = "model_metadata.json"
-    if os.path.exists(metadata_path):
-        with open(metadata_path, "r") as f:
-            return json.load(f)
-    return {
-        "img_size": [224, 224],
-        "class_names": ["NORMAL", "PNEUMONIA"]
+# =========================
+# Styling
+# =========================
+st.markdown("""
+<style>
+    .main {
+        background-color: #0E1117;
+        color: white;
     }
+    .stApp {
+        background-color: #0E1117;
+    }
+    .metric-card {
+        background-color: #1c2333;
+        padding: 18px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.08);
+        margin-bottom: 12px;
+    }
+    .prediction-normal {
+        color: #4CAF50;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+    .prediction-pneumonia {
+        color: #FF6B6B;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+    .small-note {
+        color: #B0B7C3;
+        font-size: 0.9rem;
+    }
+</style>
+""", unsafe_allow_html=True)
 
+# =========================
+# Constants
+# =========================
+MODEL_PATH = "artifacts/pneumonia_model.keras"
+METADATA_PATH = "artifacts/model_metadata.json"
 
+# =========================
+# Load Model + Metadata
+# =========================
 @st.cache_resource
-def load_prediction_model():
-    """
-    Loads either:
-    - a TensorFlow/Keras model (.keras or .h5)
-    - a scikit-learn model (.pkl)
-    """
-    # Keras model options
-    keras_paths = [
-        "pneumonia_model.keras",
-        "pneumonia_model.h5"
-    ]
+def load_trained_model(model_path: str):
+    return load_model(model_path)
 
-    for path in keras_paths:
-        if USE_TF and os.path.exists(path):
-            model = load_model(path)
-            return model, "keras"
+@st.cache_data
+def load_metadata(metadata_path: str):
+    with open(metadata_path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
-    # sklearn model option
-    pkl_path = "pneumonia_model.pkl"
-    if USE_SKLEARN and os.path.exists(pkl_path):
-        model = joblib.load(pkl_path)
-        return model, "sklearn"
+def check_required_files():
+    missing = []
+    if not Path(MODEL_PATH).exists():
+        missing.append(MODEL_PATH)
+    if not Path(METADATA_PATH).exists():
+        missing.append(METADATA_PATH)
+    return missing
 
-    raise FileNotFoundError(
-        "No saved model file found. Expected one of: "
-        "'pneumonia_model.keras', 'pneumonia_model.h5', or 'pneumonia_model.pkl'."
-    )
+# =========================
+# Image Prep
+# =========================
+def prepare_uploaded_image(uploaded_file, image_size: int):
+    # Read uploaded file as PIL image
+    image = Image.open(uploaded_file).convert("L")  # grayscale
+    image_np = np.array(image)
 
+    # Resize for model
+    resized = cv2.resize(image_np, (image_size, image_size))
 
-def preprocess_for_keras(image: Image.Image, img_size=(224, 224)):
-    """
-    Preprocess image for CNN / Keras model.
-    """
-    image = image.convert("RGB")
-    image = image.resize(img_size)
-    image_array = np.array(image).astype("float32") / 255.0
-    image_array = np.expand_dims(image_array, axis=0)  # shape: (1, H, W, C)
-    return image_array
+    # Normalize
+    normalized = resized.astype(np.float32) / 255.0
 
+    # Shape for model: (1, H, W, 1)
+    reshaped = normalized.reshape(1, image_size, image_size, 1)
 
-def preprocess_for_sklearn(image: Image.Image, img_size=(224, 224)):
-    """
-    Preprocess image for traditional ML model trained on flattened pixels.
-    """
-    image = image.convert("L")  # grayscale
-    image = image.resize(img_size)
-    image_array = np.array(image).astype("float32") / 255.0
-    image_array = image_array.flatten().reshape(1, -1)
-    return image_array
+    return image, reshaped
 
+def predict_image(model, processed_image, class_names):
+    prediction = model.predict(processed_image, verbose=0)
+    score = float(prediction[0][0])
 
-def predict_image(model, model_type, image, metadata):
-    class_names = metadata.get("class_names", ["NORMAL", "PNEUMONIA"])
-    img_size = tuple(metadata.get("img_size", [224, 224]))
+    predicted_label = class_names[1] if score > 0.5 else class_names[0]
+    normal_prob = 1.0 - score
+    pneumonia_prob = score
 
-    if model_type == "keras":
-        processed = preprocess_for_keras(image, img_size=img_size)
-        pred = model.predict(processed)
+    return predicted_label, normal_prob, pneumonia_prob
 
-        # Handle binary output shape like [[0.87]]
-        if pred.shape[-1] == 1:
-            pneumonia_prob = float(pred[0][0])
-            normal_prob = 1.0 - pneumonia_prob
-            probs = [normal_prob, pneumonia_prob]
-        else:
-            probs = pred[0].tolist()
+# =========================
+# Sidebar
+# =========================
+st.sidebar.title("🩻 Upload X-Ray Images")
+st.sidebar.markdown("Upload one or more chest X-ray images below.")
 
-    elif model_type == "sklearn":
-        processed = preprocess_for_sklearn(image, img_size=img_size)
-
-        if hasattr(model, "predict_proba"):
-            probs = model.predict_proba(processed)[0].tolist()
-        else:
-            # fallback if only predict() exists
-            pred_class = int(model.predict(processed)[0])
-            probs = [0.0] * len(class_names)
-            probs[pred_class] = 1.0
-    else:
-        raise ValueError("Unsupported model type.")
-
-    predicted_index = int(np.argmax(probs))
-    predicted_label = class_names[predicted_index]
-    confidence = float(probs[predicted_index])
-
-    return predicted_label, confidence, probs
-
-
-# -----------------------------
-# UI
-# -----------------------------
-st.title("Pneumonia Detection Dashboard")
-st.write(
-    "Upload a chest X-ray image and the model will predict whether it shows **Pneumonia** or **Normal**."
+uploaded_files = st.sidebar.file_uploader(
+    "Choose image files",
+    type=["png", "jpg", "jpeg"],
+    accept_multiple_files=True
 )
 
-metadata = load_metadata()
+show_prob_bars = st.sidebar.checkbox("Show probability bars", value=True)
 
-try:
-    model, model_type = load_prediction_model()
-    st.success(f"Loaded model successfully ({model_type}).")
-except Exception as e:
-    st.error(f"Model could not be loaded: {e}")
+st.sidebar.markdown("---")
+st.sidebar.markdown("### Model Files")
+st.sidebar.code(MODEL_PATH, language="bash")
+st.sidebar.code(METADATA_PATH, language="bash")
+
+# =========================
+# Main Title
+# =========================
+st.title("Chest X-Ray Pneumonia Detection")
+st.markdown(
+    "<p class='small-note'>Upload chest X-ray images from the sidebar to classify them as NORMAL or PNEUMONIA.</p>",
+    unsafe_allow_html=True
+)
+
+# =========================
+# Validate Model Files
+# =========================
+missing_files = check_required_files()
+if missing_files:
+    st.error("Missing required model files:")
+    for file in missing_files:
+        st.code(file)
     st.stop()
 
-uploaded_file = st.file_uploader(
-    "Upload an image",
-    type=["png", "jpg", "jpeg"]
-)
+# Load model + metadata
+model = load_trained_model(MODEL_PATH)
+metadata = load_metadata(METADATA_PATH)
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
+image_size = metadata.get("img_size", [224, 224])[0]
+class_names = metadata.get("class_names", ["NORMAL", "PNEUMONIA"])
 
-    st.subheader("Uploaded Image")
-    st.image(image, caption="Input Image", use_container_width=True)
+# =========================
+# No Upload Yet
+# =========================
+if not uploaded_files:
+    st.info("Upload one or more chest X-ray images from the sidebar to begin.")
+    st.stop()
 
-    if st.button("Predict"):
-        try:
-            predicted_label, confidence, probs = predict_image(
-                model, model_type, image, metadata
-            )
+# =========================
+# Predictions
+# =========================
+st.subheader("Predictions")
 
-            st.subheader("Prediction Result")
+for uploaded_file in uploaded_files:
+    try:
+        original_image, processed_image = prepare_uploaded_image(uploaded_file, image_size)
+        predicted_label, normal_prob, pneumonia_prob = predict_image(
+            model, processed_image, class_names
+        )
+
+        col1, col2 = st.columns([1, 1.2])
+
+        with col1:
+            st.image(original_image, caption=uploaded_file.name, use_container_width=True)
+
+        with col2:
+            st.markdown(f"<div class='metric-card'><strong>File:</strong> {uploaded_file.name}</div>", unsafe_allow_html=True)
 
             if predicted_label.upper() == "PNEUMONIA":
-                st.error(f"Prediction: **{predicted_label}**")
+                st.markdown(
+                    f"<div class='metric-card'><span class='prediction-pneumonia'>Prediction: {predicted_label}</span></div>",
+                    unsafe_allow_html=True
+                )
             else:
-                st.success(f"Prediction: **{predicted_label}**")
+                st.markdown(
+                    f"<div class='metric-card'><span class='prediction-normal'>Prediction: {predicted_label}</span></div>",
+                    unsafe_allow_html=True
+                )
 
-            st.write(f"Confidence: **{confidence:.2%}**")
+            c1, c2 = st.columns(2)
+            with c1:
+                st.metric("Normal Probability", f"{normal_prob:.2%}")
+            with c2:
+                st.metric("Pneumonia Probability", f"{pneumonia_prob:.2%}")
 
-            st.subheader("Class Probabilities")
-            class_names = metadata.get("class_names", ["NORMAL", "PNEUMONIA"])
-            for cls, prob in zip(class_names, probs):
-                st.write(f"**{cls}**: {prob:.2%}")
-                st.progress(float(prob))
+            if show_prob_bars:
+                st.progress(float(normal_prob), text=f"Normal: {normal_prob:.2%}")
+                st.progress(float(pneumonia_prob), text=f"Pneumonia: {pneumonia_prob:.2%}")
 
-        except Exception as e:
-            st.error(f"Prediction failed: {e}")
+        st.markdown("---")
+
+    except Exception as e:
+        st.error(f"Error processing {uploaded_file.name}: {e}")
+
+# =========================
+# Footer Note
+# =========================
+st.markdown(
+    """
+    <p class='small-note'>
+    Note: This app is for model demonstration purposes only and should not be used for medical diagnosis.
+    </p>
+    """,
+    unsafe_allow_html=True
+)

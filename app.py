@@ -13,11 +13,12 @@ CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 
 st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
 
+# ---------- Custom Header Styling ----------
 st.markdown(
     """
     <style>
     .header-banner {
-        background-color: #4B9CD3;  /* Carolina Blue */
+        background-color: #4B9CD3;
         padding: 25px;
         border-radius: 10px;
         text-align: center;
@@ -32,7 +33,7 @@ st.markdown(
 
     .header-banner p {
         color: white;
-        margin: 5px 0 0 0;
+        margin: 6px 0 0 0;
         font-size: 16px;
     }
     </style>
@@ -76,6 +77,7 @@ def predict_image(model, model_input: np.ndarray, threshold: float = 0.5):
     }
 
 
+# ---------- Header ----------
 st.markdown(
     """
     <div class="header-banner">
@@ -86,6 +88,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# ---------- Load Model ----------
 if not MODEL_PATH.exists():
     st.error(f"Model file not found: {MODEL_PATH}")
     st.stop()
@@ -96,6 +99,35 @@ except Exception as exc:
     st.error(f"Could not load model: {exc}")
     st.stop()
 
+# ---------- Sidebar ----------
+st.sidebar.header("Model Inputs")
+
+uploaded_file = st.sidebar.file_uploader(
+    "Upload a chest X-ray image",
+    type=["jpg", "jpeg", "png"],
+    accept_multiple_files=False,
+)
+
+threshold = st.sidebar.slider(
+    "Prediction threshold",
+    min_value=0.0,
+    max_value=1.0,
+    value=0.5,
+    step=0.01,
+    help="If pneumonia probability is greater than or equal to this threshold, the model predicts PNEUMONIA.",
+)
+
+with st.sidebar.expander("Important notes"):
+    st.markdown(
+        """
+        - Upload a chest X-ray image in JPG, JPEG, or PNG format
+        - The image is automatically converted to grayscale and resized to 64x64
+        - The threshold controls when the model calls an image pneumonia
+        - This tool is for demonstration only and not medical diagnosis
+        """
+    )
+
+# ---------- Tabs ----------
 tab1, tab2, tab3 = st.tabs(
     ["Run Model", "About the Model", "About Pneumonia"]
 )
@@ -103,30 +135,9 @@ tab1, tab2, tab3 = st.tabs(
 with tab1:
     st.header("Run the Pneumonia Detection Model")
 
-    with st.expander("Important notes"):
-        st.markdown(
-            """
-            - Images are automatically converted to grayscale and resized to 64x64
-            - This is only a demo app and not for medical diagnosis
-            """
-        )
-
-    uploaded_file = st.file_uploader(
-        "Upload a chest X-ray image",
-        type=["jpg", "jpeg", "png"],
-        accept_multiple_files=False,
-    )
-
-    threshold = st.slider(
-        "Prediction threshold for pneumonia",
-        min_value=0.0,
-        max_value=1.0,
-        value=0.5,
-        step=0.01,
-        help="If pneumonia probability is greater than or equal to this threshold, the model predicts PNEUMONIA.",
-    )
-
-    if uploaded_file is not None:
+    if uploaded_file is None:
+        st.info("Use the sidebar to upload an X-ray image and adjust the prediction threshold.")
+    else:
         try:
             display_image, model_input = preprocess_uploaded_image(uploaded_file)
             results = predict_image(model, model_input, threshold)
@@ -160,10 +171,8 @@ with tab1:
 
 with tab2:
     st.header("About the Model")
-    st.write("Add model description.")
-
+    st.write("Add your model description here.")
 
 with tab3:
     st.header("About Pneumonia")
-    st.write("Add pneumonia information.")
-
+    st.write("Add your pneumonia information here.")

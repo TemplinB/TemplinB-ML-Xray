@@ -6,7 +6,7 @@ import streamlit as st
 import tensorflow as tf
 from PIL import Image
 
-IMAGE_SIZE = 224
+IMAGE_SIZE = 64
 APP_DIR = Path(__file__).parent if "__file__" in globals() else Path(".")
 MODEL_PATH = APP_DIR / "CNN.keras"
 CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
@@ -22,7 +22,7 @@ def load_cnn_model(model_path: str):
 
 def preprocess_uploaded_image(uploaded_file):
     """
-    Convert uploaded image to grayscale, resize to 224x224,
+    Convert uploaded image to grayscale, resize to 64x64,
     normalize to [0, 1], and add channel + batch dimensions.
     """
     image = Image.open(uploaded_file).convert("L")
@@ -30,8 +30,8 @@ def preprocess_uploaded_image(uploaded_file):
 
     resized = cv2.resize(image_np, (IMAGE_SIZE, IMAGE_SIZE))
     normalized = resized.astype(np.float32) / 255.0
-    model_input = np.expand_dims(normalized, axis=-1)   # (224, 224, 1)
-    model_input = np.expand_dims(model_input, axis=0)   # (1, 224, 224, 1)
+    model_input = np.expand_dims(normalized, axis=-1)   # (64, 64, 1)
+    model_input = np.expand_dims(model_input, axis=0)   # (1, 64, 64, 1)
 
     return image_np, model_input
 
@@ -64,7 +64,7 @@ st.write(
 with st.expander("Important notes"):
     st.markdown(
         """
-        - Images are automatically converted to grayscale and resized to 224x224
+        - Images are automatically converted to grayscale and resized to 64x64
         - This is only a demo app and not for medical diagnosis
         """
     )

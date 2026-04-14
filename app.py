@@ -160,28 +160,18 @@ with tab1:
 
 with tab2:
     st.header("About the Model")
-    st.write("Add your model description here.")
+    st.write("Add model description.")
     st.markdown(
         """
-        Examples of what you may want to include here later:
-        - What kind of CNN you trained
-        - What dataset you used
-        - Image preprocessing steps
-        - Accuracy / validation results
-        - Limitations of the model
+
         """
     )
 
 with tab3:
     st.header("About Pneumonia")
-    st.write("Add your pneumonia information here.")
+    st.write("Add pneumonia information.")
     st.markdown(
         """
-        Examples of what you may want to include here later:
-        - What pneumonia is
-        - Common symptoms
-        - How chest X-rays are used
-        - When to seek medical attention
-        - Why this tool is only for demonstration
+
         """
     )

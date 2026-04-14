@@ -139,8 +139,26 @@ with tab1:
         st.info("Use the sidebar to upload an X-ray image and adjust the prediction threshold.")
     else:
         try:
+            
             display_image, model_input = preprocess_uploaded_image(uploaded_file)
             results = predict_image(model, model_input, threshold)
+
+            st.subheader("Prediction Result")
+            if results["predicted_label"] == "PNEUMONIA":
+                st.error(f"Prediction: {results['predicted_label']}")
+            else:
+                st.success(f"Prediction: {results['predicted_label']}")
+
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Confidence", f"{results['confidence']:.2%}")
+            col2.metric("Pneumonia Probability", f"{results['pneumonia_prob']:.2%}")
+            col3.metric("Normal Probability", f"{results['normal_prob']:.2%}")
+
+            st.progress(float(results["pneumonia_prob"]))
+            st.caption(
+                f"Pneumonia score: {results['pneumonia_prob']:.4f} | "
+                f"Threshold: {threshold:.2f}"
+            )
 
             st.subheader("Uploaded Image")
             st.image(

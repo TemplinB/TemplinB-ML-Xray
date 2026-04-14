@@ -172,8 +172,8 @@ with tab1:
 
 with tab2:
     st.header("About the Model")
-    st.write("Add your model description here.")
+    st.write("Add model description.")
 
 with tab3:
     st.header("About Pneumonia")
-    st.write("Add your pneumonia information here.")
+    st.write("Add pneumonia information.")

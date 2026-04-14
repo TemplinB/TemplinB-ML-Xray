@@ -82,8 +82,9 @@ if not MODEL_PATH.exists():
     )
     st.stop()
 
+
 try:
-    model = load_cnn_model(str(MODEL_PATH))
+    model = keras.models.load_model(MODEL_PATH)
 except Exception as exc:
     st.error(f"Could not load model: {exc}")
     st.stop()

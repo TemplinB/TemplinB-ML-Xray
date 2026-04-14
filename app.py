@@ -39,7 +39,6 @@ def preprocess_uploaded_image(uploaded_file):
 def predict_image(model, model_input: np.ndarray, threshold: float = 0.5):
     raw_pred = model.predict(model_input, verbose=0)
 
-    # Your model uses sigmoid with one output node:
     # output is pneumonia probability
     pneumonia_prob = float(raw_pred[0][0])
     normal_prob = 1.0 - pneumonia_prob
@@ -57,10 +56,9 @@ def predict_image(model, model_input: np.ndarray, threshold: float = 0.5):
     }
 
 
-st.title("Chest X-Ray Pneumonia Detector")
+st.title("Chest X-Ray Pneumonia Model")
 st.write(
-    "Upload a chest X-ray image to classify it as NORMAL or PNEUMONIA "
-    "using your trained CNN model."
+    "Upload a chest X-ray image to classify it as NORMAL or PNEUMONIA."
 )
 
 with st.expander("Important notes"):
@@ -74,7 +72,6 @@ with st.expander("Important notes"):
 if not MODEL_PATH.exists():
     st.error(
         f"Model file not found at: `{MODEL_PATH}`\n\n"
-        "Make sure `CNN.keras` is in the same folder as `app.py`."
     )
     st.stop()
 

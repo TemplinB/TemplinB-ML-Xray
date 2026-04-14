@@ -16,7 +16,9 @@ CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 
 def load_cnn_model(model_path: str):
     """Load and cache the trained Keras model."""
-    return tf.keras.models.load_model(model_path)
+    import keras
+        model = keras.models.load_model("CNN.keras")
+    
 
 
 
@@ -81,7 +83,7 @@ if not MODEL_PATH.exists():
     st.stop()
 
 try:
-    model = load_cnn_model(str(CNN.keras))
+    model = load_cnn_model(str(MODEL_PATH))
 except Exception as exc:
     st.error(f"Could not load model: {exc}")
     st.stop()

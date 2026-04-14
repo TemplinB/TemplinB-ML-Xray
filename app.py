@@ -161,17 +161,9 @@ with tab1:
 with tab2:
     st.header("About the Model")
     st.write("Add model description.")
-    st.markdown(
-        """
 
-        """
-    )
 
 with tab3:
     st.header("About Pneumonia")
     st.write("Add pneumonia information.")
-    st.markdown(
-        """
 
-        """
-    )

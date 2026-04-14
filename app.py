@@ -11,6 +11,27 @@ IMAGE_SIZE = 224
 MODEL_CANDIDATES = [Path("CNN.keras"), Path("CNN.h5")]
 CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 
+import zipfile
+from pathlib import Path
+import streamlit as st
+
+p = Path("CNN.keras")
+
+st.write("Exists:", p.exists())
+
+if p.exists():
+    st.write("Size:", p.stat().st_size)
+
+    with open(p, "rb") as f:
+        sig = f.read(16)
+    st.write("First 16 bytes:", sig)
+
+    try:
+        with zipfile.ZipFile(p, "r") as zf:
+            st.write("Archive contents:", zf.namelist())
+    except Exception as e:
+        st.error(f"Zip check failed: {e}")
+
 
 @st.cache_resource
 def load_cnn_model(model_path: str):

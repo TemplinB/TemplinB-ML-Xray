@@ -1,4 +1,3 @@
-import io
 from pathlib import Path
 
 import cv2
@@ -8,41 +7,44 @@ import tensorflow as tf
 from PIL import Image
 
 IMAGE_SIZE = 224
-MODEL_PATH = Path("CNN.keras")
+APP_DIR = Path(__file__).parent if "__file__" in globals() else Path(".")
+MODEL_PATH = APP_DIR / "CNN.keras"
 CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 
 
-@st.cache_resource
+st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
 
+
+@st.cache_resource
 def load_cnn_model(model_path: str):
-    """Load and cache the trained Keras model."""
     return tf.keras.models.load_model(model_path)
 
 
-
-def preprocess_uploaded_image(uploaded_file) -> tuple[np.ndarray, np.ndarray]:
+def preprocess_uploaded_image(uploaded_file):
     """
-    Convert an uploaded image to grayscale, resize to model input size,
-    normalize to [0, 1], and return both display image and model-ready array.
+    Convert uploaded image to grayscale, resize to 224x224,
+    normalize to [0, 1], and add channel + batch dimensions.
     """
     image = Image.open(uploaded_file).convert("L")
     image_np = np.array(image)
 
     resized = cv2.resize(image_np, (IMAGE_SIZE, IMAGE_SIZE))
-    normalized = resized.astype("float32") / 255.0
-    model_input = normalized.reshape(1, IMAGE_SIZE, IMAGE_SIZE, 1)
+    normalized = resized.astype(np.float32) / 255.0
+    model_input = np.expand_dims(normalized, axis=-1)   # (224, 224, 1)
+    model_input = np.expand_dims(model_input, axis=0)   # (1, 224, 224, 1)
 
     return image_np, model_input
 
 
-
-def predict_image(model, model_input: np.ndarray) -> dict:
-    """Run model inference and return formatted prediction results."""
+def predict_image(model, model_input: np.ndarray, threshold: float = 0.5):
     raw_pred = model.predict(model_input, verbose=0)
+
+    # Your model uses sigmoid with one output node:
+    # output is pneumonia probability
     pneumonia_prob = float(raw_pred[0][0])
     normal_prob = 1.0 - pneumonia_prob
 
-    predicted_class = 1 if pneumonia_prob >= 0.5 else 0
+    predicted_class = 1 if pneumonia_prob >= threshold else 0
     predicted_label = CLASS_NAMES[predicted_class]
     confidence = pneumonia_prob if predicted_class == 1 else normal_prob
 
@@ -55,28 +57,26 @@ def predict_image(model, model_input: np.ndarray) -> dict:
     }
 
 
-st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
-
 st.title("Chest X-Ray Pneumonia Detector")
 st.write(
-    "Upload a JPEG or PNG chest X-ray image to classify it as NORMAL or PNEUMONIA "
+    "Upload a chest X-ray image to classify it as NORMAL or PNEUMONIA "
     "using your trained CNN model."
 )
 
 with st.expander("Important notes"):
     st.markdown(
         """
-        - This app assumes your trained model file is named `CNN.keras`.
-        - Put `app.py` and `CNN.keras` in the same folder before running the app.
-        - The model was trained on **grayscale 224x224** images, so uploads are converted automatically.
-        - This is a demo/inference app and should **not** be used for medical diagnosis.
+        - The app expects a saved Keras model named `CNN.keras`
+        - Put `app.py` and `CNN.keras` in the same folder
+        - Images are automatically converted to grayscale and resized to 224x224
+        - This is only a demo app and not for medical diagnosis
         """
     )
 
 if not MODEL_PATH.exists():
     st.error(
-        "Model file `CNN.keras` was not found in the same folder as `app.py`. "
-        "Move your saved model into the app folder and rerun Streamlit."
+        f"Model file not found at: `{MODEL_PATH}`\n\n"
+        "Make sure `CNN.keras` is in the same folder as `app.py`."
     )
     st.stop()
 
@@ -98,34 +98,24 @@ threshold = st.slider(
     max_value=1.0,
     value=0.5,
     step=0.01,
-    help="If pneumonia probability is greater than or equal to this threshold, the app predicts PNEUMONIA.",
 )
 
 if uploaded_file is not None:
     try:
         display_image, model_input = preprocess_uploaded_image(uploaded_file)
-        results = predict_image(model, model_input)
-
-        predicted_label = (
-            "PNEUMONIA" if results["pneumonia_prob"] >= threshold else "NORMAL"
-        )
-        confidence = (
-            results["pneumonia_prob"]
-            if predicted_label == "PNEUMONIA"
-            else results["normal_prob"]
-        )
+        results = predict_image(model, model_input, threshold=threshold)
 
         st.subheader("Uploaded Image")
         st.image(display_image, caption="Uploaded chest X-ray", use_container_width=True)
 
         st.subheader("Prediction Result")
-        if predicted_label == "PNEUMONIA":
-            st.error(f"Prediction: {predicted_label}")
+        if results["predicted_label"] == "PNEUMONIA":
+            st.error(f"Prediction: {results['predicted_label']}")
         else:
-            st.success(f"Prediction: {predicted_label}")
+            st.success(f"Prediction: {results['predicted_label']}")
 
         col1, col2, col3 = st.columns(3)
-        col1.metric("Confidence", f"{confidence:.2%}")
+        col1.metric("Confidence", f"{results['confidence']:.2%}")
         col2.metric("Pneumonia Probability", f"{results['pneumonia_prob']:.2%}")
         col3.metric("Normal Probability", f"{results['normal_prob']:.2%}")
 

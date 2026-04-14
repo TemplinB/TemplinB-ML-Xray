@@ -66,8 +66,6 @@ st.write(
 with st.expander("Important notes"):
     st.markdown(
         """
-        - The app expects a saved Keras model named `CNN.keras`
-        - Put `app.py` and `CNN.keras` in the same folder
         - Images are automatically converted to grayscale and resized to 224x224
         - This is only a demo app and not for medical diagnosis
         """

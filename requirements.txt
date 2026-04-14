@@ -1,7 +1,7 @@
-streamlit
-tensorflow>=2.16
-keras>=3.0
-numpy
-opencv-python-headless
-pillow
-h5py
+streamlit>=1.32
+tensorflow>=2.16,<2.19
+keras>=3.0,<4
+numpy>=1.26
+opencv-python-headless>=4.9
+pillow>=10.0
+h5py>=3.10

@@ -13,6 +13,33 @@ CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 
 st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
 
+st.markdown(
+    """
+    <style>
+    .header-banner {
+        background-color: #4B9CD3;  /* Carolina Blue */
+        padding: 25px;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .header-banner h1 {
+        color: white;
+        margin: 0;
+        font-size: 32px;
+    }
+
+    .header-banner p {
+        color: white;
+        margin: 5px 0 0 0;
+        font-size: 16px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 
 @st.cache_resource
 def load_cnn_model(model_path: str):
@@ -49,10 +76,14 @@ def predict_image(model, model_input: np.ndarray, threshold: float = 0.5):
     }
 
 
-st.title("Chest X-Ray Pneumonia Detector")
-st.write(
-    "This application allows you to upload a chest X-ray image and classify it "
-    "as NORMAL or PNEUMONIA using a trained CNN model."
+st.markdown(
+    """
+    <div class="header-banner">
+        <h1>Chest X-Ray Pneumonia Detector</h1>
+        <p>Upload an X-ray to classify as NORMAL or PNEUMONIA using a CNN model</p>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
 if not MODEL_PATH.exists():

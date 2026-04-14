@@ -133,7 +133,6 @@ tab1, tab2, tab3 = st.tabs(
 )
 
 with tab1:
-    st.header("Run the Pneumonia Detection Model")
 
     if uploaded_file is None:
         st.info("Use the sidebar to upload an X-ray image and adjust the prediction threshold.")

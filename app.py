@@ -81,7 +81,7 @@ if not MODEL_PATH.exists():
     st.stop()
 
 try:
-    model = load_cnn_model(str(MODEL_PATH))
+    model = load_cnn_model(str(CNN.keras))
 except Exception as exc:
     st.error(f"Could not load model: {exc}")
     st.stop()

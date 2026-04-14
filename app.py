@@ -122,3 +122,95 @@ if uploaded_file is not None:
 
     except Exception as exc:
         st.error(f"Error while processing the uploaded image: {exc}")
+
+
+tab1, tab2, tab3 = st.tabs(
+    ["Run Model", "About the Model", "About Pneumonia"]
+)
+
+with tab1:
+    st.header("Run the Pneumonia Detection Model")
+
+    with st.expander("Important notes"):
+        st.markdown(
+            """
+            - The app expects a saved Keras model named `CNN.keras`
+            - Images are automatically converted to grayscale and resized to 224x224
+            - This is only a demo app and not for medical diagnosis
+            """
+        )
+
+    uploaded_file = st.file_uploader(
+        "Upload a chest X-ray image",
+        type=["jpg", "jpeg", "png"],
+        accept_multiple_files=False,
+    )
+
+    threshold = st.slider(
+        "Prediction threshold for pneumonia",
+        min_value=0.0,
+        max_value=1.0,
+        value=0.5,
+        step=0.01,
+        help="If pneumonia probability is greater than or equal to this threshold, the model predicts PNEUMONIA.",
+    )
+
+    if uploaded_file is not None:
+        try:
+            display_image, model_input = preprocess_uploaded_image(uploaded_file)
+            results = predict_image(model, model_input, threshold)
+
+            st.subheader("Uploaded Image")
+            st.image(
+                display_image,
+                caption="Uploaded chest X-ray",
+                use_container_width=True
+            )
+
+            st.subheader("Prediction Result")
+            if results["predicted_label"] == "PNEUMONIA":
+                st.error(f"Prediction: {results['predicted_label']}")
+            else:
+                st.success(f"Prediction: {results['predicted_label']}")
+
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Confidence", f"{results['confidence']:.2%}")
+            col2.metric("Pneumonia Probability", f"{results['pneumonia_prob']:.2%}")
+            col3.metric("Normal Probability", f"{results['normal_prob']:.2%}")
+
+            st.progress(float(results["pneumonia_prob"]))
+            st.caption(
+                f"Pneumonia score: {results['pneumonia_prob']:.4f} | "
+                f"Threshold: {threshold:.2f}"
+            )
+
+        except Exception as exc:
+            st.error(f"Error while processing the uploaded image: {exc}")
+
+with tab2:
+    st.header("About the Model")
+    st.write("Add your model description here.")
+    st.markdown(
+        """
+        Examples of what you may want to include here later:
+        - What kind of CNN you trained
+        - What dataset you used
+        - Image preprocessing steps
+        - Accuracy / validation results
+        - Limitations of the model
+        """
+    )
+
+with tab3:
+    st.header("About Pneumonia")
+    st.write("Add your pneumonia information here.")
+    st.markdown(
+        """
+        Examples of what you may want to include here later:
+        - What pneumonia is
+        - Common symptoms
+        - How chest X-rays are used
+        - When to seek medical attention
+        - Why this tool is only for demonstration
+        """
+    )

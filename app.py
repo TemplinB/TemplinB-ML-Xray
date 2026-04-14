@@ -1,70 +1,30 @@
-import zipfile
+import io
 from pathlib import Path
 
 import cv2
-import keras
 import numpy as np
 import streamlit as st
+import tensorflow as tf
 from PIL import Image
 
 IMAGE_SIZE = 224
-MODEL_CANDIDATES = [Path("CNN.keras"), Path("CNN.h5")]
+MODEL_PATH = Path("CNN.keras")
 CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
-
-import zipfile
-from pathlib import Path
-import streamlit as st
-
-p = Path("CNN.keras")
-
-st.write("Exists:", p.exists())
-
-if p.exists():
-    st.write("Size:", p.stat().st_size)
-
-    with open(p, "rb") as f:
-        sig = f.read(16)
-    st.write("First 16 bytes:", sig)
-
-    try:
-        with zipfile.ZipFile(p, "r") as zf:
-            st.write("Archive contents:", zf.namelist())
-    except Exception as e:
-        st.error(f"Zip check failed: {e}")
 
 
 @st.cache_resource
+
 def load_cnn_model(model_path: str):
-    return keras.models.load_model(model_path)
+    """Load and cache the trained Keras model."""
+    return tf.keras.models.load_model(model_path)
 
-
-def find_model_file() -> Path | None:
-    for path in MODEL_CANDIDATES:
-        if path.exists():
-            return path
-    return None
-
-
-def describe_model_file(model_path: Path) -> dict:
-    info = {
-        "name": model_path.name,
-        "size_bytes": model_path.stat().st_size,
-        "is_zip_based_keras": False,
-        "zip_contents": [],
-    }
-
-    if model_path.suffix == ".keras":
-        try:
-            with zipfile.ZipFile(model_path, "r") as zf:
-                info["is_zip_based_keras"] = True
-                info["zip_contents"] = zf.namelist()
-        except Exception:
-            info["is_zip_based_keras"] = False
-
-    return info
 
 
 def preprocess_uploaded_image(uploaded_file) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Convert an uploaded image to grayscale, resize to model input size,
+    normalize to [0, 1], and return both display image and model-ready array.
+    """
     image = Image.open(uploaded_file).convert("L")
     image_np = np.array(image)
 
@@ -75,7 +35,9 @@ def preprocess_uploaded_image(uploaded_file) -> tuple[np.ndarray, np.ndarray]:
     return image_np, model_input
 
 
+
 def predict_image(model, model_input: np.ndarray) -> dict:
+    """Run model inference and return formatted prediction results."""
     raw_pred = model.predict(model_input, verbose=0)
     pneumonia_prob = float(raw_pred[0][0])
     normal_prob = 1.0 - pneumonia_prob
@@ -104,41 +66,24 @@ st.write(
 with st.expander("Important notes"):
     st.markdown(
         """
-        - This app looks for `CNN.keras` first, then `CNN.h5`.
-        - Put this app file and your model file in the same folder before running the app.
+        - This app assumes your trained model file is named `CNN.keras`.
+        - Put `app.py` and `CNN.keras` in the same folder before running the app.
         - The model was trained on **grayscale 224x224** images, so uploads are converted automatically.
         - This is a demo/inference app and should **not** be used for medical diagnosis.
         """
     )
 
-model_path = find_model_file()
-
-if model_path is None:
+if not MODEL_PATH.exists():
     st.error(
-        "No model file was found. Put `CNN.keras` or `CNN.h5` in the same folder as this app."
+        "Model file `CNN.keras` was not found in the same folder as `app.py`. "
+        "Move your saved model into the app folder and rerun Streamlit."
     )
     st.stop()
 
-model_info = describe_model_file(model_path)
-
-with st.expander("Model file diagnostics"):
-    st.write(f"**Detected model file:** `{model_info['name']}`")
-    st.write(f"**Size:** {model_info['size_bytes']:,} bytes")
-    if model_path.suffix == ".keras":
-        st.write(f"**ZIP-based Keras file:** {model_info['is_zip_based_keras']}")
-        if model_info["zip_contents"]:
-            st.write("**Archive contents:**")
-            st.code("\n".join(model_info["zip_contents"]))
-
 try:
-    model = load_cnn_model(str(model_path))
-    st.success(f"Loaded model successfully from `{model_path.name}`")
+    model = load_cnn_model(str(MODEL_PATH))
 except Exception as exc:
     st.error(f"Could not load model: {exc}")
-    st.info(
-        "Your model file appears valid, so this is likely an environment/version mismatch. "
-        "Use the updated requirements file and reinstall dependencies."
-    )
     st.stop()
 
 uploaded_file = st.file_uploader(
@@ -184,6 +129,11 @@ if uploaded_file is not None:
         col2.metric("Pneumonia Probability", f"{results['pneumonia_prob']:.2%}")
         col3.metric("Normal Probability", f"{results['normal_prob']:.2%}")
 
-    except Exception as exc:
-        st.error(f"Prediction failed: {exc}")
+        st.progress(float(results["pneumonia_prob"]))
+        st.caption(
+            f"Pneumonia score: {results['pneumonia_prob']:.4f} | "
+            f"Threshold: {threshold:.2f}"
+        )
 
+    except Exception as exc:
+        st.error(f"Error while processing the uploaded image: {exc}")

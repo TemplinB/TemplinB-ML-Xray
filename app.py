@@ -167,22 +167,6 @@ with tab1:
                 use_container_width=True
             )
 
-            st.subheader("Prediction Result")
-            if results["predicted_label"] == "PNEUMONIA":
-                st.error(f"Prediction: {results['predicted_label']}")
-            else:
-                st.success(f"Prediction: {results['predicted_label']}")
-
-            col1, col2, col3 = st.columns(3)
-            col1.metric("Confidence", f"{results['confidence']:.2%}")
-            col2.metric("Pneumonia Probability", f"{results['pneumonia_prob']:.2%}")
-            col3.metric("Normal Probability", f"{results['normal_prob']:.2%}")
-
-            st.progress(float(results["pneumonia_prob"]))
-            st.caption(
-                f"Pneumonia score: {results['pneumonia_prob']:.4f} | "
-                f"Threshold: {threshold:.2f}"
-            )
 
         except Exception as exc:
             st.error(f"Error while processing the uploaded image: {exc}")

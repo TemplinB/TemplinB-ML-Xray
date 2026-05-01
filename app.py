@@ -29,7 +29,7 @@ st.markdown(
         --border: #D7EFEB;
     }
 
-    /* Hide Streamlit UI */
+    /* -------- HIDE STREAMLIT HEADER -------- */
     header[data-testid="stHeader"] {
         display: none;
     }
@@ -42,52 +42,18 @@ st.markdown(
         display: none;
     }
 
-    /* Layout spacing */
-    .block-container {
-        padding-top: 0rem;
-        padding-bottom: 3rem;
-    }
-
-    section.main > div {
-        padding-top: 0rem;
-    }
-
-    /* Main background */
-    .stApp {
-        background: var(--bg) !important;
-        color: var(--text);
-    }
-
-    /* Header banner */
-    .header-banner {
-        background: var(--primary);
-        padding: 18px 24px;
-        border-radius: 0px 0px 18px 18px;
-        text-align: center;
-        margin-bottom: 24px;
-        box-shadow: 0 6px 18px rgba(16, 42, 47, 0.16);
-    }
-
-    .header-banner h1 {
-        color: #102A2F;
-        margin: 0;
-        font-size: 34px;
-        font-weight: 800;
-    }
-
-    .header-banner p {
-        color: #17383E;
-        margin: 6px 0 0 0;
-        font-size: 15px;
-        font-weight: 500;
-    }
-
-    /* -------- SIDEBAR FIX -------- */
+    /* -------- FORCE SIDEBAR ALWAYS OPEN -------- */
     section[data-testid="stSidebar"] {
+        transform: none !important;
+        visibility: visible !important;
+        display: block !important;
+        min-width: 300px !important;
+        max-width: 300px !important;
         background: linear-gradient(180deg, var(--sidebar), var(--sidebar-soft));
         border-right: 1px solid rgba(127, 232, 215, 0.25);
     }
 
+    /* Sidebar text fix */
     section[data-testid="stSidebar"] * {
         color: #F6FBFA !important;
     }
@@ -112,7 +78,47 @@ st.markdown(
         color: #F6FBFA !important;
     }
 
-    /* Tabs */
+    /* -------- LAYOUT SPACING -------- */
+    .block-container {
+        padding-top: 0rem;
+        padding-bottom: 3rem;
+    }
+
+    section.main > div {
+        padding-top: 0rem;
+    }
+
+    /* -------- MAIN BACKGROUND -------- */
+    .stApp {
+        background: var(--bg) !important;
+        color: var(--text);
+    }
+
+    /* -------- HEADER BANNER -------- */
+    .header-banner {
+        background: var(--primary);
+        padding: 18px 24px;
+        border-radius: 0px 0px 18px 18px;
+        text-align: center;
+        margin-bottom: 24px;
+        box-shadow: 0 6px 18px rgba(16, 42, 47, 0.16);
+    }
+
+    .header-banner h1 {
+        color: #102A2F;
+        margin: 0;
+        font-size: 34px;
+        font-weight: 800;
+    }
+
+    .header-banner p {
+        color: #17383E;
+        margin: 6px 0 0 0;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    /* -------- TABS -------- */
     button[data-baseweb="tab"] {
         background-color: #FFFFFF;
         color: var(--muted);
@@ -134,12 +140,12 @@ st.markdown(
         border: 1px solid var(--primary);
     }
 
-    /* Text */
+    /* -------- TEXT -------- */
     h1, h2, h3, h4, h5, h6, p, label {
         color: var(--text);
     }
 
-    /* Buttons */
+    /* -------- BUTTONS -------- */
     div.stButton > button {
         background: var(--primary);
         color: var(--text);
@@ -155,7 +161,7 @@ st.markdown(
         border: 1px solid var(--primary-dark);
     }
 
-    /* File uploader */
+    /* -------- FILE UPLOADER -------- */
     section[data-testid="stFileUploaderDropzone"] {
         background-color: #FFFFFF;
         border: 2px dashed var(--primary-dark);
@@ -166,7 +172,7 @@ st.markdown(
         color: var(--text);
     }
 
-    /* Metrics */
+    /* -------- METRICS -------- */
     div[data-testid="stMetric"] {
         background: var(--panel);
         border: 1px solid var(--border);
@@ -180,17 +186,17 @@ st.markdown(
         font-weight: 800;
     }
 
-    /* Progress bar */
+    /* -------- PROGRESS -------- */
     div[data-testid="stProgress"] > div > div > div {
         background-color: var(--primary-dark);
     }
 
-    /* Alerts */
+    /* -------- ALERTS -------- */
     div[data-testid="stAlert"] {
         border-radius: 14px;
     }
 
-    /* Expanders */
+    /* -------- EXPANDERS -------- */
     details {
         background-color: #FFFFFF;
         border: 1px solid var(--border);
@@ -203,7 +209,7 @@ st.markdown(
         font-weight: 700;
     }
 
-    /* Images */
+    /* -------- IMAGES -------- */
     img {
         border-radius: 14px;
         box-shadow: 0 8px 20px rgba(16, 42, 47, 0.14);
@@ -212,6 +218,7 @@ st.markdown(
     .stCaption {
         color: var(--muted);
     }
+
     </style>
     """,
     unsafe_allow_html=True

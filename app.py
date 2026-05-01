@@ -103,7 +103,7 @@ except Exception as exc:
 # ---------- Sidebar ----------
 st.sidebar.header("Model Inputs")
 
-uploaded_file = st.sidebar.file_uploader(
+uploaded_files = st.sidebar.file_uploader(
     "Upload a chest X-ray image",
     type=["jpg", "jpeg", "png"],
     accept_multiple_files=True,

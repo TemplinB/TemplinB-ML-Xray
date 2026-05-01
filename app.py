@@ -14,36 +14,7 @@ CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
 
 # ---------- Custom Header Styling ----------
-st.markdown(
-    """
-    <style>
-        /* Remove top spacing */
-    .block-container {
-        padding-top: 0rem;
-    }
-    .header-banner {
-        background-color: #4B9CD3;
-        padding: 25px;
-        border-radius: 0px;
-        text-align: center;
-        margin-bottom:0px;
-    }
 
-    .header-banner h1 {
-        color: white;
-        margin: 0;
-        font-size: 32px;
-    }
-
-    .header-banner p {
-        color: white;
-        margin: 6px 0 0 0;
-        font-size: 16px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 
 
@@ -105,7 +76,7 @@ except Exception as exc:
     st.stop()
 
 # ---------- Sidebar ----------
-st.sidebar.header("Model Inputs")
+st.sidebar.header("Chest X-Ray Pneumonia Detector")
 
 uploaded_files = st.sidebar.file_uploader(
     "Upload a chest X-ray image",

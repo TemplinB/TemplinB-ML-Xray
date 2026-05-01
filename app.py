@@ -13,11 +13,25 @@ CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 
 st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
 
-# ---------- Custom Header Styling ----------
+# ---------- Custom App Styling ----------
 st.markdown(
     """
     <style>
-    /* Move content closer to the top */
+    :root {
+        --primary: #7FE8D7;
+        --primary-dark: #38BFAE;
+        --primary-light: #E8FFFB;
+        --text-dark: #12302C;
+        --soft-bg: #F6FFFD;
+        --card-bg: #FFFFFF;
+    }
+
+    /* Main app background */
+    .stApp {
+        background-color: var(--soft-bg);
+    }
+
+    /* Main content spacing */
     .block-container {
         padding-top: 0rem;
     }
@@ -26,12 +40,13 @@ st.markdown(
         padding-top: 0rem;
     }
 
+    /* Header banner */
     .header-banner {
-        background-color: #7FE8D7;
-        padding: 5px;
+        background-color: var(--primary);
+        padding: 10px;
         border-radius: 0px;
         text-align: center;
-        margin-bottom: 0px;
+        margin-bottom: 18px;
     }
 
     .header-banner h1 {
@@ -45,11 +60,103 @@ st.markdown(
         margin: 6px 0 0 0;
         font-size: 16px;
     }
+
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background-color: var(--primary-light);
+    }
+
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] p {
+        color: var(--text-dark);
+    }
+
+    /* Tabs */
+    button[data-baseweb="tab"] {
+        background-color: white;
+        border-radius: 10px 10px 0 0;
+        color: var(--text-dark);
+        font-weight: 600;
+        margin-right: 4px;
+    }
+
+    button[data-baseweb="tab"][aria-selected="true"] {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    /* Buttons */
+    div.stButton > button {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+    }
+
+    div.stButton > button:hover {
+        background-color: var(--primary-dark);
+        color: white;
+        border: none;
+    }
+
+    /* File uploader */
+    section[data-testid="stFileUploaderDropzone"] {
+        background-color: white;
+        border: 2px dashed var(--primary-dark);
+        border-radius: 12px;
+    }
+
+    section[data-testid="stFileUploaderDropzone"] * {
+        color: var(--text-dark);
+    }
+
+    /* Metrics */
+    div[data-testid="stMetric"] {
+        background-color: white;
+        border: 1px solid var(--primary);
+        border-radius: 12px;
+        padding: 14px;
+    }
+
+    div[data-testid="stMetric"] label {
+        color: var(--text-dark);
+    }
+
+    /* Progress bar */
+    div[data-testid="stProgress"] > div > div > div {
+        background-color: var(--primary-dark);
+    }
+
+    /* Info boxes */
+    div[data-testid="stAlert"] {
+        border-radius: 12px;
+    }
+
+    /* Expander */
+    details {
+        background-color: white;
+        border: 1px solid var(--primary);
+        border-radius: 10px;
+        padding: 4px;
+    }
+
+    /* General headings */
+    h1, h2, h3, h4 {
+        color: var(--text-dark);
+    }
+
+    /* Image caption */
+    .stImage caption {
+        color: var(--text-dark);
+    }
     </style>
     """,
     unsafe_allow_html=True
 )
-
 
 
 

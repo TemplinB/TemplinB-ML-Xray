@@ -52,6 +52,15 @@ def predict_image(model, model_input: np.ndarray, threshold: float = 0.5):
         "normal_prob": normal_prob,
     }
 
+# ---------- Header ----------
+st.markdown(
+    """
+    <div class="header-banner">
+        <h1>Chest X-Ray Pneumonia Detector</h1>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # ---------- Load Model ----------
 if not MODEL_PATH.exists():

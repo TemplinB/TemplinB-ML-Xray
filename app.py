@@ -26,7 +26,6 @@ st.markdown(
     .header-banner {
         background-color: #4B9CD3;
         width: 90vw;              /* full screen width */
-        margin-left: -50vw;        /* pull it left */
         left: 50%;
         position: relative;
 

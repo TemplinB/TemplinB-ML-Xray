@@ -214,7 +214,6 @@ with tab3:
     st.write("Add pneumonia information.")
 
 with tab4:
-    st.header("Run the Pneumonia Detection Model")
 
     if not uploaded_files:
         st.info("Use the sidebar to upload one or more X-ray images.")

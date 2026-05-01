@@ -213,7 +213,7 @@ with tab3:
     st.header("About Pneumonia")
     st.write("Add pneumonia information.")
 
-with tab1:
+with tab4:
     st.header("Run the Pneumonia Detection Model")
 
     if not uploaded_files:

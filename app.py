@@ -22,8 +22,7 @@ st.markdown(
         --primary-dark: #44C7B7;
         --bg: #F6FBFA;
         --panel: #FFFFFF;
-        --sidebar: #102A2F;
-        --sidebar-soft: #17383E;
+        --sidebar-bg: #EFFFFC;
         --text: #102A2F;
         --muted: #5E7477;
         --border: #D7EFEB;
@@ -49,36 +48,47 @@ st.markdown(
         display: block !important;
         min-width: 300px !important;
         max-width: 300px !important;
-        background: linear-gradient(180deg, var(--sidebar), var(--sidebar-soft));
-        border-right: 1px solid rgba(127, 232, 215, 0.25);
+
+        /* MATCH MAIN APP */
+        background: var(--sidebar-bg);
+        border-right: 1px solid var(--border);
+
+        /* subtle depth */
+        box-shadow: inset -2px 0px 8px rgba(16, 42, 47, 0.05);
     }
 
-    /* Sidebar text fix */
+    /* Sidebar text */
     section[data-testid="stSidebar"] * {
-        color: #F6FBFA !important;
-    }
-
-    section[data-testid="stSidebar"] h1,
-    section[data-testid="stSidebar"] h2,
-    section[data-testid="stSidebar"] h3 {
-        color: var(--primary) !important;
-    }
-
-    section[data-testid="stSidebar"] label,
-    section[data-testid="stSidebar"] p,
-    section[data-testid="stSidebar"] span {
-        color: #F6FBFA !important;
-    }
-
-    section[data-testid="stSidebar"] button {
         color: var(--text) !important;
     }
 
-    section[data-testid="stSidebar"] div[data-testid="stSlider"] * {
-        color: #F6FBFA !important;
+    /* Sidebar headers */
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3 {
+        color: var(--primary-dark) !important;
     }
 
-    /* -------- LAYOUT SPACING -------- */
+    /* Sidebar inputs */
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span {
+        color: var(--text) !important;
+    }
+
+    /* Sidebar uploader */
+    section[data-testid="stSidebar"] section[data-testid="stFileUploaderDropzone"] {
+        background-color: #FFFFFF;
+        border: 2px dashed var(--primary-dark);
+        border-radius: 14px;
+    }
+
+    /* Sidebar slider */
+    section[data-testid="stSidebar"] div[data-testid="stSlider"] * {
+        color: var(--text) !important;
+    }
+
+    /* -------- LAYOUT -------- */
     .block-container {
         padding-top: 0rem;
         padding-bottom: 3rem;
@@ -105,7 +115,7 @@ st.markdown(
     }
 
     .header-banner h1 {
-        color: #102A2F;
+        color: var(--text);
         margin: 0;
         font-size: 34px;
         font-weight: 800;
@@ -115,7 +125,6 @@ st.markdown(
         color: #17383E;
         margin: 6px 0 0 0;
         font-size: 15px;
-        font-weight: 500;
     }
 
     /* -------- TABS -------- */
@@ -138,11 +147,6 @@ st.markdown(
         background: var(--primary);
         color: var(--text);
         border: 1px solid var(--primary);
-    }
-
-    /* -------- TEXT -------- */
-    h1, h2, h3, h4, h5, h6, p, label {
-        color: var(--text);
     }
 
     /* -------- BUTTONS -------- */

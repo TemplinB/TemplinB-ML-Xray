@@ -49,7 +49,7 @@ def load_cnn_model(model_path: str):
 
 
 def preprocess_uploaded_image(uploaded_file):
-    image = Image.open(uploaded_file).convert("L")
+    image = Image.open(uploaded_files).convert("L")
     image_np = np.array(image)
 
     resized = cv2.resize(image_np, (IMAGE_SIZE, IMAGE_SIZE))
@@ -106,7 +106,7 @@ st.sidebar.header("Model Inputs")
 uploaded_file = st.sidebar.file_uploader(
     "Upload a chest X-ray image",
     type=["jpg", "jpeg", "png"],
-    accept_multiple_files=False,
+    accept_multiple_files=True,
 )
 
 threshold = st.sidebar.slider(
@@ -129,13 +129,13 @@ with st.sidebar.expander("Important notes"):
     )
 
 # ---------- Tabs ----------
-tab1, tab2, tab3 = st.tabs(
-    ["Run Model", "About the Model", "About Pneumonia"]
+tab1, tab2, tab3, tab4= st.tabs(
+    ["Run Model", "About the Model", "About Pneumonia", "Trial"]
 )
 
 with tab1:
 
-    if uploaded_file is None:
+    if uploaded_files is None:
         st.info("Use the sidebar to upload an X-ray image and adjust the prediction threshold.")
     else:
         try:
@@ -178,3 +178,42 @@ with tab2:
 with tab3:
     st.header("About Pneumonia")
     st.write("Add pneumonia information.")
+
+with tab4:
+    st.header("Run the Pneumonia Detection Model")
+
+    if not uploaded_files:
+        st.info("Use the sidebar to upload one or more X-ray images.")
+    else:
+        for uploaded_file in uploaded_files:
+            st.divider()
+            st.subheader(f"Image: {uploaded_file.name}")
+
+            try:
+                display_image, model_input = preprocess_uploaded_image(uploaded_file)
+                results = predict_image(model, model_input, threshold)
+
+                st.image(
+                    display_image,
+                    caption=uploaded_file.name,
+                    use_container_width=True
+                )
+
+                if results["predicted_label"] == "PNEUMONIA":
+                    st.error(f"Prediction: {results['predicted_label']}")
+                else:
+                    st.success(f"Prediction: {results['predicted_label']}")
+
+                col1, col2, col3 = st.columns(3)
+                col1.metric("Confidence", f"{results['confidence']:.2%}")
+                col2.metric("Pneumonia Probability", f"{results['pneumonia_prob']:.2%}")
+                col3.metric("Normal Probability", f"{results['normal_prob']:.2%}")
+
+                st.progress(float(results["pneumonia_prob"]))
+                st.caption(
+                    f"Pneumonia score: {results['pneumonia_prob']:.4f} | "
+                    f"Threshold: {threshold:.2f}"
+                )
+
+            except Exception as exc:
+                st.error(f"Error processing {uploaded_file.name}: {exc}")

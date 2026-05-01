@@ -17,6 +17,10 @@ st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered
 st.markdown(
     """
     <style>
+        /* Remove top spacing */
+    .block-container {
+        padding-top: 0rem;
+    }
     .header-banner {
         background-color: #4B9CD3;
         padding: 5px;

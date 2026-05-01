@@ -135,7 +135,7 @@ tab1, tab2, tab3, tab4= st.tabs(
 
 with tab1:
 
-    if uploaded_file is None:
+    if uploaded_files is None:
         st.info("Use the sidebar to upload an X-ray image and adjust the prediction threshold.")
     else:
         try:

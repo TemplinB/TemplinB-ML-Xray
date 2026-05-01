@@ -216,4 +216,75 @@ with tab3:
 with tab4:
     st.write("Testing Tab.")
 
+    if not uploaded_files:
+        st.info("Use the sidebar to upload one or more X-ray images.")
+    else:
+        if "image_index" not in st.session_state:
+            st.session_state.image_index = 0
+
+        if st.session_state.image_index >= len(uploaded_files):
+            st.session_state.image_index = 0
+
+        uploaded_file = uploaded_files[st.session_state.image_index]
+
+        try:
+            display_image, model_input = preprocess_uploaded_image(uploaded_file)
+            results = predict_image(model, model_input, threshold)
+
+            st.markdown(
+                f"<h4 style='text-align:center;'>Image "
+                f"{st.session_state.image_index + 1} of {len(uploaded_files)}</h4>",
+                unsafe_allow_html=True
+            )
+
+            col_left, col_img, col_right = st.columns([1, 8, 1])
+
+            with col_left:
+                st.write("")
+                st.write("")
+                st.write("")
+                if st.button("⬅️", use_container_width=True):
+                    st.session_state.image_index -= 1
+                    if st.session_state.image_index < 0:
+                        st.session_state.image_index = len(uploaded_files) - 1
+                    st.rerun()
+
+            with col_img:
+                st.image(
+                    display_image,
+                    caption=uploaded_file.name,
+                    use_container_width=True
+                )
+
+            with col_right:
+                st.write("")
+                st.write("")
+                st.write("")
+                if st.button("➡️", use_container_width=True):
+                    st.session_state.image_index += 1
+                    if st.session_state.image_index >= len(uploaded_files):
+                        st.session_state.image_index = 0
+                    st.rerun()
+
+            st.subheader("Prediction Result")
+
+            if results["predicted_label"] == "PNEUMONIA":
+                st.error(f"Prediction: {results['predicted_label']}")
+            else:
+                st.success(f"Prediction: {results['predicted_label']}")
+
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Confidence", f"{results['confidence']:.2%}")
+            col2.metric("Pneumonia Probability", f"{results['pneumonia_prob']:.2%}")
+            col3.metric("Normal Probability", f"{results['normal_prob']:.2%}")
+
+            st.progress(float(results["pneumonia_prob"]))
+            st.caption(
+                f"Pneumonia score: {results['pneumonia_prob']:.4f} | "
+                f"Threshold: {threshold:.2f}"
+            )
+
+        except Exception as exc:
+            st.error(f"Error processing {uploaded_file.name}: {exc}")
+
 

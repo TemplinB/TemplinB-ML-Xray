@@ -140,7 +140,7 @@ with tab1:
     else:
         try:
             
-            display_image, model_input = preprocess_uploaded_image(uploaded_file)
+            display_image, model_input = preprocess_uploaded_image(uploaded_files)
             results = predict_image(model, model_input, threshold)
 
             st.subheader("Prediction Result")

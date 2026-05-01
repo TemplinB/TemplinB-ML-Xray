@@ -23,7 +23,6 @@ st.markdown(
         border-radius: 10px;
         text-align: center;
         margin-bottom: 20px;
-        margin-top:20px; 
     }
 
     .header-banner h1 {

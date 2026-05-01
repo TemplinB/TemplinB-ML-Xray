@@ -18,20 +18,18 @@ st.markdown(
     """
     <style>
     :root {
-        --bg: #061A1F;
-        --panel: #0B2A30;
-        --panel-soft: #123B42;
         --primary: #7FE8D7;
-        --primary-dark: #38BFAE;
-        --primary-glow: rgba(127, 232, 215, 0.35);
-        --secondary: #9ED8FF;
-        --text: #F4FFFD;
-        --muted: #B7D7D3;
-        --danger: #FF6B8A;
-        --success: #7FE8A5;
+        --primary-dark: #44C7B7;
+        --bg: #F6FBFA;
+        --panel: #FFFFFF;
+        --sidebar: #102A2F;
+        --sidebar-soft: #17383E;
+        --text: #102A2F;
+        --muted: #5E7477;
+        --border: #D7EFEB;
     }
 
-    /* Hide Streamlit default UI */
+    /* Hide Streamlit top UI */
     header[data-testid="stHeader"] {
         display: none;
     }
@@ -44,7 +42,7 @@ st.markdown(
         display: none;
     }
 
-    /* Remove top spacing */
+    /* Page spacing */
     .block-container {
         padding-top: 0rem;
         padding-bottom: 3rem;
@@ -54,58 +52,44 @@ st.markdown(
         padding-top: 0rem;
     }
 
-    /* Force custom theme */
-    html, body, [class*="css"] {
-        color: var(--text) !important;
-    }
-
-    [data-testid="stAppViewContainer"] {
-        background: none !important;
-    }
-
+    /* Main app background */
     .stApp {
-        background:
-            radial-gradient(circle at top left, rgba(127,232,215,0.24), transparent 30%),
-            radial-gradient(circle at bottom right, rgba(158,216,255,0.14), transparent 34%),
-            linear-gradient(135deg, #041316 0%, #061A1F 50%, #09262B 100%) !important;
+        background: var(--bg) !important;
         color: var(--text);
     }
 
     /* Header banner */
     .header-banner {
-        background:
-            linear-gradient(90deg, #7FE8D7 0%, #38BFAE 50%, #9ED8FF 100%);
+        background: var(--primary);
         padding: 18px 24px;
-        border-radius: 0px 0px 24px 24px;
+        border-radius: 0px 0px 18px 18px;
         text-align: center;
         margin-bottom: 24px;
-        box-shadow: 0 14px 34px rgba(0,0,0,0.35);
+        box-shadow: 0 6px 18px rgba(16, 42, 47, 0.16);
     }
 
     .header-banner h1 {
-        color: #032326;
+        color: #102A2F;
         margin: 0;
-        font-size: 36px;
-        font-weight: 900;
-        letter-spacing: 0.4px;
+        font-size: 34px;
+        font-weight: 800;
     }
 
     .header-banner p {
-        color: #06393C;
+        color: #17383E;
         margin: 6px 0 0 0;
-        font-size: 16px;
-        font-weight: 600;
+        font-size: 15px;
+        font-weight: 500;
     }
 
     /* Sidebar */
     section[data-testid="stSidebar"] {
-        background:
-            linear-gradient(180deg, #041316 0%, #0B2A30 100%);
-        border-right: 1px solid rgba(127,232,215,0.3);
+        background: linear-gradient(180deg, var(--sidebar), var(--sidebar-soft));
+        border-right: 1px solid rgba(127, 232, 215, 0.25);
     }
 
     section[data-testid="stSidebar"] * {
-        color: var(--text);
+        color: #F6FBFA;
     }
 
     section[data-testid="stSidebar"] h1,
@@ -116,55 +100,52 @@ st.markdown(
 
     /* Tabs */
     button[data-baseweb="tab"] {
-        background-color: rgba(255,255,255,0.06);
+        background-color: #FFFFFF;
         color: var(--muted);
-        border-radius: 14px 14px 0 0;
+        border-radius: 12px 12px 0 0;
         padding: 10px 18px;
-        margin-right: 6px;
-        font-weight: 800;
-        border: 1px solid rgba(127,232,215,0.18);
+        margin-right: 5px;
+        font-weight: 700;
+        border: 1px solid var(--border);
     }
 
     button[data-baseweb="tab"]:hover {
-        background-color: rgba(127,232,215,0.14);
+        background-color: #EFFFFC;
         color: var(--text);
     }
 
     button[data-baseweb="tab"][aria-selected="true"] {
-        background: linear-gradient(90deg, var(--primary), var(--secondary));
-        color: #032326;
-        border: none;
+        background: var(--primary);
+        color: var(--text);
+        border: 1px solid var(--primary);
+    }
+
+    /* General text */
+    h1, h2, h3, h4, h5, h6, p, label {
+        color: var(--text);
     }
 
     /* Buttons */
     div.stButton > button {
-        background: linear-gradient(90deg, var(--primary), var(--secondary));
-        color: #032326;
-        border: none;
-        border-radius: 14px;
-        font-weight: 900;
-        box-shadow: 0 8px 22px var(--primary-glow);
-        transition: 0.2s ease-in-out;
+        background: var(--primary);
+        color: var(--text);
+        border: 1px solid var(--primary-dark);
+        border-radius: 12px;
+        font-weight: 800;
+        box-shadow: 0 4px 12px rgba(68, 199, 183, 0.25);
     }
 
     div.stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 28px rgba(127,232,215,0.45);
-        color: #032326;
-        border: none;
+        background: var(--primary-dark);
+        color: white;
+        border: 1px solid var(--primary-dark);
     }
 
     /* File uploader */
     section[data-testid="stFileUploaderDropzone"] {
-        background-color: rgba(255,255,255,0.06);
-        border: 2px dashed var(--primary);
-        border-radius: 18px;
-        padding: 16px;
-    }
-
-    section[data-testid="stFileUploaderDropzone"]:hover {
-        background-color: rgba(127,232,215,0.1);
-        border-color: var(--secondary);
+        background-color: #FFFFFF;
+        border: 2px dashed var(--primary-dark);
+        border-radius: 14px;
     }
 
     section[data-testid="stFileUploaderDropzone"] * {
@@ -173,74 +154,55 @@ st.markdown(
 
     /* Metrics */
     div[data-testid="stMetric"] {
-        background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(127,232,215,0.35);
-        border-radius: 18px;
-        padding: 18px;
-        box-shadow: 0 10px 26px rgba(0,0,0,0.24);
-    }
-
-    div[data-testid="stMetric"] label {
-        color: var(--muted);
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 4px 14px rgba(16, 42, 47, 0.08);
     }
 
     div[data-testid="stMetricValue"] {
-        color: var(--primary);
-        font-weight: 900;
+        color: var(--primary-dark);
+        font-weight: 800;
     }
 
     /* Progress bar */
     div[data-testid="stProgress"] > div > div > div {
-        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        background-color: var(--primary-dark);
     }
 
-    /* Alerts */
+    /* Alerts and expanders */
     div[data-testid="stAlert"] {
-        border-radius: 16px;
-        border: 1px solid rgba(127,232,215,0.2);
+        border-radius: 14px;
     }
 
-    /* Expanders */
     details {
-        background-color: rgba(255,255,255,0.06);
-        border: 1px solid rgba(127,232,215,0.25);
-        border-radius: 16px;
-        padding: 8px;
+        background-color: #FFFFFF;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 6px;
     }
 
     summary {
-        color: var(--primary);
-        font-weight: 800;
+        color: var(--text);
+        font-weight: 700;
     }
 
     /* Images */
     img {
-        border-radius: 18px;
-        box-shadow: 0 12px 30px rgba(0,0,0,0.34);
-    }
-
-    /* Text */
-    h1, h2, h3, h4, h5, h6, p, label {
-        color: var(--text);
+        border-radius: 14px;
+        box-shadow: 0 8px 20px rgba(16, 42, 47, 0.14);
     }
 
     .stCaption {
         color: var(--muted);
     }
-
-    /* Slider label */
-    .stSlider label {
-        color: var(--text);
-        font-weight: 700;
-    }
-
-    hr {
-        border-color: rgba(127,232,215,0.25);
-    }
     </style>
     """,
     unsafe_allow_html=True
 )
+
+
 @st.cache_resource
 def load_cnn_model(model_path: str):
     return tf.keras.models.load_model(model_path)

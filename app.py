@@ -138,54 +138,57 @@ tab1, tab2, tab3, tab4= st.tabs(
 )
 
 with tab1:
+    st.write("Testing Tab.")
 
     if not uploaded_files:
         st.info("Use the sidebar to upload one or more X-ray images.")
     else:
-        # Create image index tracker
         if "image_index" not in st.session_state:
             st.session_state.image_index = 0
 
-        # Make sure index does not go out of range
         if st.session_state.image_index >= len(uploaded_files):
             st.session_state.image_index = 0
 
-        # Sidebar/controls
-        col_prev, col_count, col_next = st.columns([1, 2, 1])
-
-        with col_prev:
-            if st.button("⬅️ Previous"):
-                st.session_state.image_index -= 1
-                if st.session_state.image_index < 0:
-                    st.session_state.image_index = len(uploaded_files) - 1
-
-        with col_count:
-            st.markdown(
-                f"<h4 style='text-align:center;'>Image "
-                f"{st.session_state.image_index + 1} of {len(uploaded_files)}</h4>",
-                unsafe_allow_html=True
-            )
-
-        with col_next:
-            if st.button("Next ➡️"):
-                st.session_state.image_index += 1
-                if st.session_state.image_index >= len(uploaded_files):
-                    st.session_state.image_index = 0
-
-        # Current selected image
         uploaded_file = uploaded_files[st.session_state.image_index]
 
         try:
             display_image, model_input = preprocess_uploaded_image(uploaded_file)
             results = predict_image(model, model_input, threshold)
 
-            st.subheader(f"Image: {uploaded_file.name}")
-
-            st.image(
-                display_image,
-                caption=uploaded_file.name,
-                use_container_width=True
+            st.markdown(
+                f"<h4 style='text-align:center;'>Image "
+                f"{st.session_state.image_index + 1} of {len(uploaded_files)}</h4>",
+                unsafe_allow_html=True
             )
+
+            col_left, col_img, col_right = st.columns([1, 8, 1])
+
+            with col_left:
+                st.write("")
+                st.write("")
+                st.write("")
+                if st.button("<-", use_container_width=True):
+                    st.session_state.image_index -= 1
+                    if st.session_state.image_index < 0:
+                        st.session_state.image_index = len(uploaded_files) - 1
+                    st.rerun()
+
+            with col_img:
+                st.image(
+                    display_image,
+                    caption=uploaded_file.name,
+                    use_container_width=True
+                )
+
+            with col_right:
+                st.write("")
+                st.write("")
+                st.write("")
+                if st.button("->", use_container_width=True):
+                    st.session_state.image_index += 1
+                    if st.session_state.image_index >= len(uploaded_files):
+                        st.session_state.image_index = 0
+                    st.rerun()
 
             st.subheader("Prediction Result")
 
@@ -207,7 +210,6 @@ with tab1:
 
         except Exception as exc:
             st.error(f"Error processing {uploaded_file.name}: {exc}")
-
 
 with tab2:
     st.header("About the Model")
@@ -247,7 +249,7 @@ with tab4:
                 st.write("")
                 st.write("")
                 st.write("")
-                if st.button("⬅️", use_container_width=True):
+                if st.button("<-", use_container_width=True):
                     st.session_state.image_index -= 1
                     if st.session_state.image_index < 0:
                         st.session_state.image_index = len(uploaded_files) - 1

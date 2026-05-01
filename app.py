@@ -134,54 +134,6 @@ tab1, tab2, tab3, tab4= st.tabs(
 )
 
 with tab1:
-    if not uploaded_files:
-        st.info("Use the sidebar to upload one or more X-ray images.")
-    else:
-        for uploaded_file in uploaded_files:
-            st.divider()
-            st.subheader(f"Image: {uploaded_file.name}")
-
-            try:
-                display_image, model_input = preprocess_uploaded_image(uploaded_file)
-                results = predict_image(model, model_input, threshold)
-
-                st.image(
-                    display_image,
-                    caption=uploaded_file.name,
-                    use_container_width=True
-                )
-
-                if results["predicted_label"] == "PNEUMONIA":
-                    st.error(f"Prediction: {results['predicted_label']}")
-                else:
-                    st.success(f"Prediction: {results['predicted_label']}")
-
-                col1, col2, col3 = st.columns(3)
-                col1.metric("Confidence", f"{results['confidence']:.2%}")
-                col2.metric("Pneumonia Probability", f"{results['pneumonia_prob']:.2%}")
-                col3.metric("Normal Probability", f"{results['normal_prob']:.2%}")
-
-                st.progress(float(results["pneumonia_prob"]))
-                st.caption(
-                    f"Pneumonia score: {results['pneumonia_prob']:.4f} | "
-                    f"Threshold: {threshold:.2f}"
-                )
-
-            except Exception as exc:
-                st.error(f"Error processing {uploaded_file.name}: {exc}")
-
-
-with tab2:
-    st.header("About the Model")
-    st.write("Add model description.")
-
-with tab3:
-    st.header("About Pneumonia")
-    st.write("Add pneumonia information.")
-
-with tab4:
-    st.header("Testing Tab")
-    
 
     if not uploaded_files:
         st.info("Use the sidebar to upload one or more X-ray images.")
@@ -251,3 +203,17 @@ with tab4:
 
         except Exception as exc:
             st.error(f"Error processing {uploaded_file.name}: {exc}")
+
+
+with tab2:
+    st.header("About the Model")
+    st.write("Add model description.")
+
+with tab3:
+    st.header("About Pneumonia")
+    st.write("Add pneumonia information.")
+
+with tab4:
+    st.header("Testing Tab")
+    
+

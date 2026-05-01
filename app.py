@@ -260,7 +260,7 @@ with tab4:
                 st.write("")
                 st.write("")
                 st.write("")
-                if st.button(">", use_container_width=True):
+                if st.button("->", use_container_width=True):
                     st.session_state.image_index += 1
                     if st.session_state.image_index >= len(uploaded_files):
                         st.session_state.image_index = 0

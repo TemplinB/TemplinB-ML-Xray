@@ -213,9 +213,10 @@ with tab3:
     st.header("About Pneumonia")
     st.write("Add pneumonia information.")
 
-with tab4:
-    st.header("Testing Tab")
-        if not uploaded_files:
+with tab1:
+    st.header("Run the Pneumonia Detection Model")
+
+    if not uploaded_files:
         st.info("Use the sidebar to upload one or more X-ray images.")
     else:
         # Create image index tracker
@@ -228,10 +229,9 @@ with tab4:
 
         # Sidebar/controls
         col_prev, col_count, col_next = st.columns([1, 2, 1])
-        
 
         with col_prev:
-            if st.button("< Previous"):
+            if st.button("⬅️ Previous"):
                 st.session_state.image_index -= 1
                 if st.session_state.image_index < 0:
                     st.session_state.image_index = len(uploaded_files) - 1
@@ -284,7 +284,3 @@ with tab4:
 
         except Exception as exc:
             st.error(f"Error processing {uploaded_file.name}: {exc}")
-
-
-    
-

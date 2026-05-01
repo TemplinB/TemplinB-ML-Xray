@@ -24,9 +24,9 @@ st.markdown(
     .header-banner {
         background-color: #4B9CD3;
         padding: 25px;
-        border-radius: 0px;
+        border-radius: -10px;
         text-align: center;
-        margin-bottom:-10px;
+        margin-bottom:0px;
     }
 
     .header-banner h1 {

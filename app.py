@@ -49,7 +49,7 @@ def load_cnn_model(model_path: str):
 
 
 def preprocess_uploaded_image(uploaded_file):
-    image = Image.open(uploaded_files).convert("L")
+    image = Image.open(uploaded_file).convert("L")
     image_np = np.array(image)
 
     resized = cv2.resize(image_np, (IMAGE_SIZE, IMAGE_SIZE))

@@ -53,17 +53,6 @@ def predict_image(model, model_input: np.ndarray, threshold: float = 0.5):
     }
 
 
-# ---------- Header ----------
-st.markdown(
-    """
-    <div class="header-banner">
-        <h1>Chest X-Ray Pneumonia Detector</h1>
-        <p>Upload an X-ray to classify as NORMAL or PNEUMONIA using a CNN model</p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
 # ---------- Load Model ----------
 if not MODEL_PATH.exists():
     st.error(f"Model file not found: {MODEL_PATH}")

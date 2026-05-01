@@ -26,7 +26,7 @@ st.markdown(
         padding: 25px;
         border-radius: 0px;
         text-align: center;
-        margin-bottom: 0px;
+        margin-bottom:-25px;
     }
 
     .header-banner h1 {

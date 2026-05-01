@@ -14,6 +14,32 @@ CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
 
 # ---------- Custom Header Styling ----------
+st.markdown(
+    """
+    <style>
+    .header-banner {
+        background-color: #7FE8D7;
+        padding: 25px;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .header-banner h1 {
+        color: white;
+        margin: 0;
+        font-size: 32px;
+    }
+
+    .header-banner p {
+        color: white;
+        margin: 6px 0 0 0;
+        font-size: 16px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 

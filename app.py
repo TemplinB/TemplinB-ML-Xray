@@ -19,13 +19,13 @@ st.markdown(
     <style>
     /* Remove default top padding */
     .block-container {
-        padding-top: 0rem;
+        padding-top: 10rem;
     }
 
     /* Full-width banner */
     .header-banner {
         background-color: #4B9CD3;
-        width: 100vw;              /* full screen width */
+        width: 90vw;              /* full screen width */
         margin-left: -50vw;        /* pull it left */
         left: 50%;
         position: relative;

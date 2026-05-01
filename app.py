@@ -29,7 +29,7 @@ st.markdown(
         --border: #D7EFEB;
     }
 
-    /* Hide Streamlit top UI */
+    /* Hide Streamlit UI */
     header[data-testid="stHeader"] {
         display: none;
     }
@@ -42,7 +42,7 @@ st.markdown(
         display: none;
     }
 
-    /* Page spacing */
+    /* Layout spacing */
     .block-container {
         padding-top: 0rem;
         padding-bottom: 3rem;
@@ -52,7 +52,7 @@ st.markdown(
         padding-top: 0rem;
     }
 
-    /* Main app background */
+    /* Main background */
     .stApp {
         background: var(--bg) !important;
         color: var(--text);
@@ -82,20 +82,34 @@ st.markdown(
         font-weight: 500;
     }
 
-    /* Sidebar */
+    /* -------- SIDEBAR FIX -------- */
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, var(--sidebar), var(--sidebar-soft));
         border-right: 1px solid rgba(127, 232, 215, 0.25);
     }
 
     section[data-testid="stSidebar"] * {
-        color: #F6FBFA;
+        color: #F6FBFA !important;
     }
 
     section[data-testid="stSidebar"] h1,
     section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] h3 {
-        color: var(--primary);
+        color: var(--primary) !important;
+    }
+
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span {
+        color: #F6FBFA !important;
+    }
+
+    section[data-testid="stSidebar"] button {
+        color: var(--text) !important;
+    }
+
+    section[data-testid="stSidebar"] div[data-testid="stSlider"] * {
+        color: #F6FBFA !important;
     }
 
     /* Tabs */
@@ -120,7 +134,7 @@ st.markdown(
         border: 1px solid var(--primary);
     }
 
-    /* General text */
+    /* Text */
     h1, h2, h3, h4, h5, h6, p, label {
         color: var(--text);
     }
@@ -171,11 +185,12 @@ st.markdown(
         background-color: var(--primary-dark);
     }
 
-    /* Alerts and expanders */
+    /* Alerts */
     div[data-testid="stAlert"] {
         border-radius: 14px;
     }
 
+    /* Expanders */
     details {
         background-color: #FFFFFF;
         border: 1px solid var(--border);

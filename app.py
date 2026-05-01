@@ -13,7 +13,6 @@ CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 
 st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
 
-# ---------- Custom App Styling ----------
 st.markdown(
     """
     <style>
@@ -29,14 +28,20 @@ st.markdown(
         --success: #43E88D;
     }
 
-    .stApp {
-        background:
-            radial-gradient(circle at top left, rgba(56,232,208,0.18), transparent 32%),
-            radial-gradient(circle at top right, rgba(88,166,255,0.16), transparent 28%),
-            linear-gradient(135deg, #061525 0%, #071A2D 50%, #081E33 100%);
-        color: var(--text);
+    /* -------- REMOVE STREAMLIT UI -------- */
+    header[data-testid="stHeader"] {
+        display: none;
     }
 
+    #MainMenu {
+        visibility: hidden;
+    }
+
+    footer {
+        display: none;
+    }
+
+    /* Remove top padding gap */
     .block-container {
         padding-top: 0rem;
         padding-bottom: 3rem;
@@ -46,7 +51,23 @@ st.markdown(
         padding-top: 0rem;
     }
 
-    /* Header banner */
+    /* -------- FORCE DARK THEME -------- */
+    html, body, [class*="css"] {
+        color: var(--text) !important;
+    }
+
+    [data-testid="stAppViewContainer"] {
+        background: none !important;
+    }
+
+    .stApp {
+        background:
+            radial-gradient(circle at top left, rgba(56,232,208,0.18), transparent 32%),
+            radial-gradient(circle at top right, rgba(88,166,255,0.16), transparent 28%),
+            linear-gradient(135deg, #061525 0%, #071A2D 50%, #081E33 100%) !important;
+    }
+
+    /* -------- HEADER -------- */
     .header-banner {
         background:
             linear-gradient(90deg, rgba(56,232,208,0.95), rgba(88,166,255,0.95));
@@ -62,16 +83,14 @@ st.markdown(
         margin: 0;
         font-size: 36px;
         font-weight: 800;
-        letter-spacing: 0.5px;
     }
 
     .header-banner p {
-        color: rgba(255,255,255,0.92);
+        color: rgba(255,255,255,0.9);
         margin: 6px 0 0 0;
-        font-size: 16px;
     }
 
-    /* Sidebar */
+    /* -------- SIDEBAR -------- */
     section[data-testid="stSidebar"] {
         background:
             linear-gradient(180deg, #061525 0%, #0B2742 100%);
@@ -83,12 +102,11 @@ st.markdown(
     }
 
     section[data-testid="stSidebar"] h1,
-    section[data-testid="stSidebar"] h2,
-    section[data-testid="stSidebar"] h3 {
+    section[data-testid="stSidebar"] h2 {
         color: var(--accent);
     }
 
-    /* Tabs */
+    /* -------- TABS -------- */
     button[data-baseweb="tab"] {
         background-color: rgba(255,255,255,0.06);
         color: var(--muted);
@@ -110,46 +128,29 @@ st.markdown(
         border: none;
     }
 
-    /* Main text */
-    h1, h2, h3, h4, h5, h6, p, label, span {
-        color: var(--text);
-    }
-
-    /* Buttons */
+    /* -------- BUTTONS -------- */
     div.stButton > button {
         background: linear-gradient(90deg, var(--accent), var(--accent-2));
         color: white;
-        border: none;
         border-radius: 14px;
         font-weight: 800;
         box-shadow: 0 8px 20px rgba(56,232,208,0.25);
-        transition: 0.2s ease-in-out;
+        transition: 0.2s;
     }
 
     div.stButton > button:hover {
         transform: translateY(-2px);
         box-shadow: 0 12px 26px rgba(88,166,255,0.35);
-        color: white;
     }
 
-    /* File uploader */
+    /* -------- FILE UPLOADER -------- */
     section[data-testid="stFileUploaderDropzone"] {
         background-color: rgba(255,255,255,0.06);
         border: 2px dashed var(--accent);
         border-radius: 18px;
-        padding: 18px;
     }
 
-    section[data-testid="stFileUploaderDropzone"]:hover {
-        background-color: rgba(56,232,208,0.08);
-        border-color: var(--accent-2);
-    }
-
-    section[data-testid="stFileUploaderDropzone"] * {
-        color: var(--text);
-    }
-
-    /* Metrics */
+    /* -------- METRICS -------- */
     div[data-testid="stMetric"] {
         background: rgba(255,255,255,0.08);
         border: 1px solid rgba(56,232,208,0.35);
@@ -158,32 +159,26 @@ st.markdown(
         box-shadow: 0 10px 24px rgba(0,0,0,0.22);
     }
 
-    div[data-testid="stMetric"] label {
-        color: var(--muted);
-    }
-
     div[data-testid="stMetricValue"] {
         color: var(--accent);
         font-weight: 800;
     }
 
-    /* Progress bar */
+    /* -------- PROGRESS -------- */
     div[data-testid="stProgress"] > div > div > div {
         background: linear-gradient(90deg, var(--accent), var(--accent-2));
     }
 
-    /* Alerts */
+    /* -------- ALERTS -------- */
     div[data-testid="stAlert"] {
         border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.14);
     }
 
-    /* Expanders */
+    /* -------- EXPANDERS -------- */
     details {
         background-color: rgba(255,255,255,0.06);
         border: 1px solid rgba(56,232,208,0.25);
         border-radius: 16px;
-        padding: 8px;
     }
 
     summary {
@@ -191,32 +186,25 @@ st.markdown(
         font-weight: 700;
     }
 
-    /* Images */
+    /* -------- IMAGES -------- */
     img {
         border-radius: 18px;
         box-shadow: 0 12px 28px rgba(0,0,0,0.32);
     }
 
-    /* Captions */
-    .stCaption, caption {
+    /* -------- TEXT -------- */
+    h1, h2, h3, h4, h5, h6, p, label {
+        color: var(--text);
+    }
+
+    .stCaption {
         color: var(--muted);
     }
 
-    /* Slider */
-    .stSlider label {
-        color: var(--text);
-        font-weight: 700;
-    }
-
-    /* Dividers */
-    hr {
-        border-color: rgba(56,232,208,0.25);
-    }
     </style>
     """,
     unsafe_allow_html=True
 )
-
 
 @st.cache_resource
 def load_cnn_model(model_path: str):

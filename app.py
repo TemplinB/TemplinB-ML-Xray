@@ -23,7 +23,7 @@ st.markdown(
     }
     .header-banner {
         background-color: #4B9CD3;
-        padding: 5px;
+        padding: 25px;
         border-radius: 0px;
         text-align: center;
         margin-bottom: 0px;

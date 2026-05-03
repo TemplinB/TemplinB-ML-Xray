@@ -50,7 +50,6 @@ st.markdown(
         display: block !important;
         min-width: 300px !important;
         max-width: 300px !important;
-
         background: var(--sidebar-bg);
         border-right: 1px solid var(--border);
         box-shadow: inset -2px 0px 8px rgba(16, 42, 47, 0.05);
@@ -106,7 +105,7 @@ st.markdown(
         font-size: 15px;
     }
 
-    /* -------- TABS -------- */
+    /* -------- TABS (FIXED) -------- */
     button[data-baseweb="tab"] {
         background-color: #FFFFFF;
         color: var(--muted);
@@ -118,6 +117,11 @@ st.markdown(
         position: relative;
     }
 
+    /* REMOVE default red underline */
+    button[data-baseweb="tab"]::after {
+        display: none !important;
+    }
+
     button[data-baseweb="tab"]:hover {
         background-color: #EFFFFC;
         color: var(--text);
@@ -127,17 +131,7 @@ st.markdown(
         background: var(--primary);
         color: var(--text);
         border: 1px solid var(--primary);
-    }
-
-    /* FIX RED UNDERLINE → BLACK */
-    button[data-baseweb="tab"][aria-selected="true"]::after {
-        content: "";
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background-color: var(--accent-dark) !important;
+        border-bottom: 3px solid black !important;
     }
 
     /* -------- BUTTONS -------- */

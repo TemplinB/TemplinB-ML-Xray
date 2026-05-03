@@ -407,7 +407,7 @@ with tab1:
         active_color_mode = "rgb"
 
     st.caption(
-        f"Current model: {selected_model_name} | "
+        f"Current model: {selected_model_name} "
     )
 
     show_model_results(

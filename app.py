@@ -407,7 +407,7 @@ with tab1:
         active_color_mode = "rgb"
 
     st.caption(
-        f"Current model: {active_model_name} | "
+        f"Current model: {selected_model_name} | "
         f"Input size: {active_image_size}x{active_image_size} | "
         f"Color mode: {active_color_mode}"
     )

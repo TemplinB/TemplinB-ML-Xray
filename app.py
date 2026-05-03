@@ -322,6 +322,8 @@ def show_model_results(model_to_use, image_size, image_index_key, tab_label, col
     try:
         display_image, model_input = preprocess_uploaded_image(
             uploaded_file,
+            image_size,
+            color_mode
 
         )
 

@@ -408,8 +408,6 @@ with tab1:
 
     st.caption(
         f"Current model: {selected_model_name} | "
-        f"Input size: {active_image_size}x{active_image_size} | "
-        f"Color mode: {active_color_mode}"
     )
 
     show_model_results(

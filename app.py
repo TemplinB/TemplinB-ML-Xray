@@ -6,9 +6,13 @@ import streamlit as st
 import tensorflow as tf
 from PIL import Image
 
-IMAGE_SIZE = 64
+MAIN_IMAGE_SIZE = 64
+TRIAL_IMAGE_SIZE = 128
+
 APP_DIR = Path(__file__).parent
 MODEL_PATH = APP_DIR / "CNN.keras"
+TRIAL_MODEL_PATH = APP_DIR / "CNN_MNV2.keras"
+
 CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 
 st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
@@ -28,7 +32,6 @@ st.markdown(
         --border: #D7EFEB;
     }
 
-    /* -------- HIDE STREAMLIT HEADER -------- */
     header[data-testid="stHeader"] {
         display: none;
     }
@@ -41,54 +44,33 @@ st.markdown(
         display: none;
     }
 
-    /* -------- FORCE SIDEBAR ALWAYS OPEN -------- */
     section[data-testid="stSidebar"] {
         transform: none !important;
         visibility: visible !important;
         display: block !important;
         min-width: 300px !important;
         max-width: 300px !important;
-
-        /* MATCH MAIN APP */
         background: var(--sidebar-bg);
         border-right: 1px solid var(--border);
-
-        /* subtle depth */
         box-shadow: inset -2px 0px 8px rgba(16, 42, 47, 0.05);
     }
 
-    /* Sidebar text */
     section[data-testid="stSidebar"] * {
         color: var(--text) !important;
     }
 
-    /* Sidebar headers */
     section[data-testid="stSidebar"] h1,
     section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] h3 {
         color: var(--primary-dark) !important;
     }
 
-    /* Sidebar inputs */
-    section[data-testid="stSidebar"] label,
-    section[data-testid="stSidebar"] p,
-    section[data-testid="stSidebar"] span {
-        color: var(--text) !important;
-    }
-
-    /* Sidebar uploader */
     section[data-testid="stSidebar"] section[data-testid="stFileUploaderDropzone"] {
         background-color: #FFFFFF;
         border: 2px dashed var(--primary-dark);
         border-radius: 14px;
     }
 
-    /* Sidebar slider */
-    section[data-testid="stSidebar"] div[data-testid="stSlider"] * {
-        color: var(--text) !important;
-    }
-
-    /* -------- LAYOUT -------- */
     .block-container {
         padding-top: 0rem;
         padding-bottom: 3rem;
@@ -98,13 +80,11 @@ st.markdown(
         padding-top: 0rem;
     }
 
-    /* -------- MAIN BACKGROUND -------- */
     .stApp {
         background: var(--bg) !important;
         color: var(--text);
     }
 
-    /* -------- HEADER BANNER -------- */
     .header-banner {
         background: var(--primary);
         padding: 18px 24px;
@@ -127,7 +107,6 @@ st.markdown(
         font-size: 15px;
     }
 
-    /* -------- TABS -------- */
     button[data-baseweb="tab"] {
         background-color: #FFFFFF;
         color: var(--muted);
@@ -149,7 +128,6 @@ st.markdown(
         border: 1px solid var(--primary);
     }
 
-    /* -------- BUTTONS -------- */
     div.stButton > button {
         background: var(--primary);
         color: var(--text);
@@ -165,7 +143,6 @@ st.markdown(
         border: 1px solid var(--primary-dark);
     }
 
-    /* -------- FILE UPLOADER -------- */
     section[data-testid="stFileUploaderDropzone"] {
         background-color: #FFFFFF;
         border: 2px dashed var(--primary-dark);
@@ -176,7 +153,6 @@ st.markdown(
         color: var(--text);
     }
 
-    /* -------- METRICS -------- */
     div[data-testid="stMetric"] {
         background: var(--panel);
         border: 1px solid var(--border);
@@ -190,17 +166,14 @@ st.markdown(
         font-weight: 800;
     }
 
-    /* -------- PROGRESS -------- */
     div[data-testid="stProgress"] > div > div > div {
         background-color: var(--primary-dark);
     }
 
-    /* -------- ALERTS -------- */
     div[data-testid="stAlert"] {
         border-radius: 14px;
     }
 
-    /* -------- EXPANDERS -------- */
     details {
         background-color: #FFFFFF;
         border: 1px solid var(--border);
@@ -213,7 +186,6 @@ st.markdown(
         font-weight: 700;
     }
 
-    /* -------- IMAGES -------- */
     img {
         border-radius: 14px;
         box-shadow: 0 8px 20px rgba(16, 42, 47, 0.14);
@@ -222,23 +194,24 @@ st.markdown(
     .stCaption {
         color: var(--muted);
     }
-
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 @st.cache_resource
 def load_cnn_model(model_path: str):
     return tf.keras.models.load_model(model_path)
 
 
-def preprocess_uploaded_image(uploaded_file):
+def preprocess_uploaded_image(uploaded_file, image_size):
     image = Image.open(uploaded_file).convert("L")
     image_np = np.array(image)
 
-    resized = cv2.resize(image_np, (IMAGE_SIZE, IMAGE_SIZE))
+    resized = cv2.resize(image_np, (image_size, image_size))
     normalized = resized.astype(np.float32) / 255.0
+
     model_input = np.expand_dims(normalized, axis=-1)
     model_input = np.expand_dims(model_input, axis=0)
 
@@ -247,6 +220,7 @@ def preprocess_uploaded_image(uploaded_file):
 
 def predict_image(model, model_input: np.ndarray, threshold: float = 0.5):
     raw_pred = model.predict(model_input, verbose=0)
+
     pneumonia_prob = float(raw_pred[0][0])
     normal_prob = 1.0 - pneumonia_prob
 
@@ -262,6 +236,7 @@ def predict_image(model, model_input: np.ndarray, threshold: float = 0.5):
         "normal_prob": normal_prob,
     }
 
+
 # ---------- Header ----------
 st.markdown(
     """
@@ -272,24 +247,37 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ---------- Load Model ----------
+
+# ---------- Load Models ----------
 if not MODEL_PATH.exists():
-    st.error(f"Model file not found: {MODEL_PATH}")
+    st.error(f"Main model file not found: {MODEL_PATH}")
+    st.stop()
+
+if not TRIAL_MODEL_PATH.exists():
+    st.error(f"Trial model file not found: {TRIAL_MODEL_PATH}")
     st.stop()
 
 try:
     model = load_cnn_model(str(MODEL_PATH))
+    trial_model = load_cnn_model(str(TRIAL_MODEL_PATH))
 except Exception as exc:
-    st.error(f"Could not load model: {exc}")
+    st.error(f"Could not load models: {exc}")
     st.stop()
+
 
 # ---------- Sidebar ----------
 st.sidebar.header("Chest X-Ray Pneumonia Detector")
 
 uploaded_files = st.sidebar.file_uploader(
-    "Upload a chest X-ray image",
+    "Upload chest X-ray images",
     type=["jpg", "jpeg", "png"],
     accept_multiple_files=True,
+)
+
+selected_model_name = st.sidebar.radio(
+    "Choose model",
+    ["CNN Model", "MobileNetV2 Trial Model"],
+    index=0,
 )
 
 threshold = st.sidebar.slider(
@@ -304,91 +292,122 @@ threshold = st.sidebar.slider(
 with st.sidebar.expander("Important notes"):
     st.markdown(
         """
-        - Upload a chest X-ray image in JPG, JPEG, or PNG format
-        - The images in the first model are automatically converted to grayscale and resized to 64x64
-        - The images in the second model are automatically converted to grayscale and resized to 128x128
-        - The threshold controls when the model calls an image pneumonia
+        - Upload chest X-ray images in JPG, JPEG, or PNG format
+        - CNN Model uses grayscale 64x64 images
+        - MobileNetV2 Trial Model uses grayscale 128x128 images
+        - Switching models will re-run the prediction on the same uploaded image
         - This tool is for demonstration only and not medical diagnosis
         """
     )
 
+
+# ---------- Shared Display Function ----------
+def show_model_results(model_to_use, image_size, image_index_key, tab_label):
+    if not uploaded_files:
+        st.info("Use the sidebar to upload one or more X-ray images.")
+        return
+
+    if image_index_key not in st.session_state:
+        st.session_state[image_index_key] = 0
+
+    if st.session_state[image_index_key] >= len(uploaded_files):
+        st.session_state[image_index_key] = 0
+
+    uploaded_file = uploaded_files[st.session_state[image_index_key]]
+
+    try:
+        display_image, model_input = preprocess_uploaded_image(
+            uploaded_file,
+            image_size
+        )
+
+        results = predict_image(model_to_use, model_input, threshold)
+
+        st.markdown(
+            f"<h4 style='text-align:center;'>Image "
+            f"{st.session_state[image_index_key] + 1} of {len(uploaded_files)}</h4>",
+            unsafe_allow_html=True
+        )
+
+        col_left, col_img, col_right = st.columns([1, 8, 1])
+
+        with col_left:
+            st.write("")
+            st.write("")
+            st.write("")
+            if st.button(f"<- {tab_label}", use_container_width=True):
+                st.session_state[image_index_key] -= 1
+                if st.session_state[image_index_key] < 0:
+                    st.session_state[image_index_key] = len(uploaded_files) - 1
+                st.rerun()
+
+        with col_img:
+            st.image(
+                display_image,
+                caption=uploaded_file.name,
+                use_container_width=True
+            )
+
+        with col_right:
+            st.write("")
+            st.write("")
+            st.write("")
+            if st.button(f"{tab_label} ->", use_container_width=True):
+                st.session_state[image_index_key] += 1
+                if st.session_state[image_index_key] >= len(uploaded_files):
+                    st.session_state[image_index_key] = 0
+                st.rerun()
+
+        st.subheader("Prediction Result")
+
+        if results["predicted_label"] == "PNEUMONIA":
+            st.error(f"Prediction: {results['predicted_label']}")
+        else:
+            st.success(f"Prediction: {results['predicted_label']}")
+
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Confidence", f"{results['confidence']:.2%}")
+        col2.metric("Pneumonia Probability", f"{results['pneumonia_prob']:.2%}")
+        col3.metric("Normal Probability", f"{results['normal_prob']:.2%}")
+
+        st.progress(float(results["pneumonia_prob"]))
+        st.caption(
+            f"Pneumonia score: {results['pneumonia_prob']:.4f} | "
+            f"Threshold: {threshold:.2f}"
+        )
+
+    except Exception as exc:
+        st.error(f"Error processing {uploaded_file.name}: {exc}")
+
+
 # ---------- Tabs ----------
-tab1, tab2, tab3, tab4= st.tabs(
-    ["Diagnosis", "About the Model", "About Pneumonia", "Trial"]
+tab1, tab2, tab3 = st.tabs(
+    ["Diagnosis", "About the Model", "About Pneumonia"]
 )
 
 with tab1:
+    st.subheader("Diagnosis")
 
-    if not uploaded_files:
-        st.info("Use the sidebar to upload one or more X-ray images.")
+    if selected_model_name == "CNN Model":
+        active_model = model
+        active_image_size = MAIN_IMAGE_SIZE
+        active_model_file = "CNN.keras"
     else:
-        if "image_index" not in st.session_state:
-            st.session_state.image_index = 0
+        active_model = trial_model
+        active_image_size = TRIAL_IMAGE_SIZE
+        active_model_file = "CNN_MNV2.keras"
 
-        if st.session_state.image_index >= len(uploaded_files):
-            st.session_state.image_index = 0
+    st.caption(
+        f"Current model: {active_model_file} | "
+        f"Input size: {active_image_size}x{active_image_size} grayscale"
+    )
 
-        uploaded_file = uploaded_files[st.session_state.image_index]
-
-        try:
-            display_image, model_input = preprocess_uploaded_image(uploaded_file)
-            results = predict_image(model, model_input, threshold)
-
-            st.markdown(
-                f"<h4 style='text-align:center;'>Image "
-                f"{st.session_state.image_index + 1} of {len(uploaded_files)}</h4>",
-                unsafe_allow_html=True
-            )
-
-            col_left, col_img, col_right = st.columns([1, 8, 1])
-
-            with col_left:
-                st.write("")
-                st.write("")
-                st.write("")
-                if st.button("<-", use_container_width=True):
-                    st.session_state.image_index -= 1
-                    if st.session_state.image_index < 0:
-                        st.session_state.image_index = len(uploaded_files) - 1
-                    st.rerun()
-
-            with col_img:
-                st.image(
-                    display_image,
-                    caption=uploaded_file.name,
-                    use_container_width=True
-                )
-
-            with col_right:
-                st.write("")
-                st.write("")
-                st.write("")
-                if st.button("->", use_container_width=True):
-                    st.session_state.image_index += 1
-                    if st.session_state.image_index >= len(uploaded_files):
-                        st.session_state.image_index = 0
-                    st.rerun()
-
-            st.subheader("Prediction Result")
-
-            if results["predicted_label"] == "PNEUMONIA":
-                st.error(f"Prediction: {results['predicted_label']}")
-            else:
-                st.success(f"Prediction: {results['predicted_label']}")
-
-            col1, col2, col3 = st.columns(3)
-            col1.metric("Confidence", f"{results['confidence']:.2%}")
-            col2.metric("Pneumonia Probability", f"{results['pneumonia_prob']:.2%}")
-            col3.metric("Normal Probability", f"{results['normal_prob']:.2%}")
-
-            st.progress(float(results["pneumonia_prob"]))
-            st.caption(
-                f"Pneumonia score: {results['pneumonia_prob']:.4f} | "
-                f"Threshold: {threshold:.2f}"
-            )
-
-        except Exception as exc:
-            st.error(f"Error processing {uploaded_file.name}: {exc}")
+    show_model_results(
+        model_to_use=active_model,
+        image_size=active_image_size,
+        image_index_key="main_image_index",
+        tab_label="Diagnosis"
+    )
 
 with tab2:
     st.header("About the Model")
@@ -396,9 +415,4 @@ with tab2:
 
 with tab3:
     st.header("About Pneumonia")
-    st.write("Pneumonia is an infection of the lungs that causes inflammation and fluid or pus to fill the air sacs (alveoli), making it harder for oxygen to pass into the bloodstream. On a chest X-ray, it typically appears as areas of increased opacity (white or cloudy patches) where air should normally look dark, often localized to a lobe. Clinically, it’s generally safer to be overly cautious and treat a suspected case of pneumonia, even if it turns out not to be present, because untreated pneumonia can rapidly worsen, leading to serious complications like respiratory failure or sepsis, whereas the risks of short-term treatment such as antibiotics when indicated are usually much lower than the potential harm of missing a true infection.")
-    st.write("There are two types of pneumonia: bacterial and viral. Both infect the lungs but differ in cause, severity, and treatment. Bacterial pneumonia is commonly caused by organisms like Streptococcus pneumoniae and often develops suddenly with high fever, coughing, and more localized findings on imaging, and it is typically treated with antibiotics. Viral pneumonia is caused by viruses such as Influenza or SARS-CoV-2 and tends to appear more gradually. Symptoms include dry cough, fatigue, and diffused patterns on X-rays, and usually do not respond to antibiotics. Instead, viral cases are managed with supportive care and, in some cases, antivrial medication. Despite the antibiotics rarely affecting viral pnuemonia, they are often still prescribed as a precaution.")
-
-with tab4:
-    st.write("Testing Tab.")
-    
+    st.write("Pneumonia is an infection of the lungs that causes inflammation and fluid or pus to fill the air sacs (alveoli), making it harder for oxygen to pass into the bloodstream. On a chest X-ray, it typically appears as areas of increased opacity (white or cloudy patches) where air should normally look dark, often localized to a lobe. Clinically, it’s generally safer to be overly cautious and treat a suspected case of pneumonia, even if it turns out not to be present, because untreated pneumonia can rapidly worsen, leading to serious complications like respiratory failure or sepsis, whereas the risks of short-term treatment such as antibiotics when indicated are usually much lower than the potential harm of missing a true infection.")st.write("There are two types of pneumonia: bacterial and viral. Both infect the lungs but differ in cause, severity, and treatment. Bacterial pneumonia is commonly caused by organisms like Streptococcus pneumoniae and often develops suddenly with high fever, coughing, and more localized findings on imaging, and it is typically treated with antibiotics. Viral pneumonia is caused by viruses such as Influenza or SARS-CoV-2 and tends to appear more gradually. Symptoms include dry cough, fatigue, and diffused patterns on X-rays, and usually do not respond to antibiotics. Instead, viral cases are managed with supportive care and, in some cases, antivrial medication. Despite the antibiotics rarely affecting viral pnuemonia, they are often still prescribed as a precaution.")

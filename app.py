@@ -280,7 +280,7 @@ uploaded_files = st.sidebar.file_uploader(
 
 selected_model_name = st.sidebar.radio(
     "Choose model",
-    ["CNN.Keras", "MobileNetV2 Trial Model"],
+    ["CNN Model", "MobileNetV2 Trial Model"],
     index=0,
 )
 

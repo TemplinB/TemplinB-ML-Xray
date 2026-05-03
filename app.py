@@ -17,6 +17,7 @@ CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 
 st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
 
+
 # ---------- Custom App Styling ----------
 st.markdown(
     """
@@ -65,12 +66,6 @@ st.markdown(
         color: var(--primary-dark) !important;
     }
 
-    section[data-testid="stSidebar"] section[data-testid="stFileUploaderDropzone"] {
-        background-color: #FFFFFF;
-        border: 2px dashed var(--primary-dark);
-        border-radius: 14px;
-    }
-
     .block-container {
         padding-top: 0rem;
         padding-bottom: 3rem;
@@ -99,12 +94,6 @@ st.markdown(
         margin: 0;
         font-size: 34px;
         font-weight: 800;
-    }
-
-    .header-banner p {
-        color: #17383E;
-        margin: 6px 0 0 0;
-        font-size: 15px;
     }
 
     button[data-baseweb="tab"] {
@@ -205,15 +194,25 @@ def load_cnn_model(model_path: str):
     return tf.keras.models.load_model(model_path)
 
 
-def preprocess_uploaded_image(uploaded_file, image_size):
-    image = Image.open(uploaded_file).convert("L")
-    image_np = np.array(image)
+def preprocess_uploaded_image(uploaded_file, image_size, color_mode="grayscale"):
+    if color_mode == "rgb":
+        image = Image.open(uploaded_file).convert("RGB")
+        image_np = np.array(image)
 
-    resized = cv2.resize(image_np, (image_size, image_size))
-    normalized = resized.astype(np.float32) / 255.0
+        resized = cv2.resize(image_np, (image_size, image_size))
+        normalized = resized.astype(np.float32) / 255.0
 
-    model_input = np.expand_dims(normalized, axis=-1)
-    model_input = np.expand_dims(model_input, axis=0)
+        model_input = np.expand_dims(normalized, axis=0)
+
+    else:
+        image = Image.open(uploaded_file).convert("L")
+        image_np = np.array(image)
+
+        resized = cv2.resize(image_np, (image_size, image_size))
+        normalized = resized.astype(np.float32) / 255.0
+
+        model_input = np.expand_dims(normalized, axis=-1)
+        model_input = np.expand_dims(model_input, axis=0)
 
     return image_np, model_input
 
@@ -294,7 +293,7 @@ with st.sidebar.expander("Important notes"):
         """
         - Upload chest X-ray images in JPG, JPEG, or PNG format
         - CNN Model uses grayscale 64x64 images
-        - MobileNetV2 Trial Model uses grayscale 128x128 images
+        - MobileNetV2 Trial Model uses RGB 128x128 images
         - Switching models will re-run the prediction on the same uploaded image
         - This tool is for demonstration only and not medical diagnosis
         """
@@ -302,7 +301,7 @@ with st.sidebar.expander("Important notes"):
 
 
 # ---------- Shared Display Function ----------
-def show_model_results(model_to_use, image_size, image_index_key, tab_label):
+def show_model_results(model_to_use, image_size, image_index_key, tab_label, color_mode):
     if not uploaded_files:
         st.info("Use the sidebar to upload one or more X-ray images.")
         return
@@ -318,7 +317,8 @@ def show_model_results(model_to_use, image_size, image_index_key, tab_label):
     try:
         display_image, model_input = preprocess_uploaded_image(
             uploaded_file,
-            image_size
+            image_size,
+            color_mode
         )
 
         results = predict_image(model_to_use, model_input, threshold)
@@ -335,7 +335,7 @@ def show_model_results(model_to_use, image_size, image_index_key, tab_label):
             st.write("")
             st.write("")
             st.write("")
-            if st.button(f"<- {tab_label}", use_container_width=True):
+            if st.button("<-", use_container_width=True):
                 st.session_state[image_index_key] -= 1
                 if st.session_state[image_index_key] < 0:
                     st.session_state[image_index_key] = len(uploaded_files) - 1
@@ -352,7 +352,7 @@ def show_model_results(model_to_use, image_size, image_index_key, tab_label):
             st.write("")
             st.write("")
             st.write("")
-            if st.button(f"{tab_label} ->", use_container_width=True):
+            if st.button("->", use_container_width=True):
                 st.session_state[image_index_key] += 1
                 if st.session_state[image_index_key] >= len(uploaded_files):
                     st.session_state[image_index_key] = 0
@@ -385,30 +385,37 @@ tab1, tab2, tab3 = st.tabs(
     ["Diagnosis", "About the Model", "About Pneumonia"]
 )
 
+
 with tab1:
 
     if selected_model_name == "CNN Model":
         active_model = model
         active_image_size = MAIN_IMAGE_SIZE
         active_model_file = "CNN.keras"
+        active_color_mode = "grayscale"
     else:
         active_model = trial_model
         active_image_size = TRIAL_IMAGE_SIZE
         active_model_file = "CNN_MNV2.keras"
+        active_color_mode = "rgb"
 
     st.caption(
         f"Current model: {active_model_file} | "
-        f"Input size: {active_image_size}x{active_image_size} grayscale"
+        f"Input size: {active_image_size}x{active_image_size} | "
+        f"Color mode: {active_color_mode}"
     )
 
     show_model_results(
         model_to_use=active_model,
         image_size=active_image_size,
         image_index_key="main_image_index",
-        tab_label="Diagnosis"
+        tab_label="Diagnosis",
+        color_mode=active_color_mode
     )
 
+
 with tab2:
+    st.header("About the Model")
     st.write("Add model description.")
 
 with tab3:

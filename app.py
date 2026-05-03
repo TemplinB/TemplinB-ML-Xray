@@ -14,6 +14,7 @@ CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
 
 # ---------- Custom App Styling ----------
+# ---------- Custom App Styling ----------
 st.markdown(
     """
     <style>
@@ -26,6 +27,7 @@ st.markdown(
         --text: #102A2F;
         --muted: #5E7477;
         --border: #D7EFEB;
+        --accent-dark: #102A2F;
     }
 
     /* -------- HIDE STREAMLIT HEADER -------- */
@@ -49,11 +51,8 @@ st.markdown(
         min-width: 300px !important;
         max-width: 300px !important;
 
-        /* MATCH MAIN APP */
         background: var(--sidebar-bg);
         border-right: 1px solid var(--border);
-
-        /* subtle depth */
         box-shadow: inset -2px 0px 8px rgba(16, 42, 47, 0.05);
     }
 
@@ -62,30 +61,10 @@ st.markdown(
         color: var(--text) !important;
     }
 
-    /* Sidebar headers */
     section[data-testid="stSidebar"] h1,
     section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] h3 {
         color: var(--primary-dark) !important;
-    }
-
-    /* Sidebar inputs */
-    section[data-testid="stSidebar"] label,
-    section[data-testid="stSidebar"] p,
-    section[data-testid="stSidebar"] span {
-        color: var(--text) !important;
-    }
-
-    /* Sidebar uploader */
-    section[data-testid="stSidebar"] section[data-testid="stFileUploaderDropzone"] {
-        background-color: #FFFFFF;
-        border: 2px dashed var(--primary-dark);
-        border-radius: 14px;
-    }
-
-    /* Sidebar slider */
-    section[data-testid="stSidebar"] div[data-testid="stSlider"] * {
-        color: var(--text) !important;
     }
 
     /* -------- LAYOUT -------- */
@@ -136,6 +115,7 @@ st.markdown(
         margin-right: 5px;
         font-weight: 700;
         border: 1px solid var(--border);
+        position: relative;
     }
 
     button[data-baseweb="tab"]:hover {
@@ -147,6 +127,17 @@ st.markdown(
         background: var(--primary);
         color: var(--text);
         border: 1px solid var(--primary);
+    }
+
+    /* FIX RED UNDERLINE → BLACK */
+    button[data-baseweb="tab"][aria-selected="true"]::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: var(--accent-dark) !important;
     }
 
     /* -------- BUTTONS -------- */
@@ -188,6 +179,16 @@ st.markdown(
     div[data-testid="stMetricValue"] {
         color: var(--primary-dark);
         font-weight: 800;
+    }
+
+    /* -------- SLIDER BLACK -------- */
+    div[data-testid="stSlider"] > div > div > div {
+        background-color: var(--accent-dark) !important;
+    }
+
+    div[data-testid="stSlider"] [role="slider"] {
+        background-color: var(--accent-dark) !important;
+        border: 2px solid var(--accent-dark) !important;
     }
 
     /* -------- PROGRESS -------- */
@@ -400,3 +401,4 @@ with tab3:
 
 with tab4:
     st.write("Testing Tab.")
+    

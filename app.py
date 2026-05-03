@@ -6,14 +6,13 @@ import streamlit as st
 import tensorflow as tf
 from PIL import Image
 
-IMAGE_SIZE = 64
+IMAGE_SIZE = 128
 APP_DIR = Path(__file__).parent
 MODEL_PATH = APP_DIR / "CNN.keras"
 CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 
 st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
 
-# ---------- Custom App Styling ----------
 # ---------- Custom App Styling ----------
 st.markdown(
     """
@@ -306,7 +305,7 @@ with st.sidebar.expander("Important notes"):
     st.markdown(
         """
         - Upload a chest X-ray image in JPG, JPEG, or PNG format
-        - The image is automatically converted to grayscale and resized to 64x64
+        - The image is automatically converted to grayscale and resized to 128x128
         - The threshold controls when the model calls an image pneumonia
         - This tool is for demonstration only and not medical diagnosis
         """

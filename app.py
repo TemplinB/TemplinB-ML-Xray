@@ -396,7 +396,7 @@ with tab2:
 
 with tab3:
     st.header("About Pneumonia")
-    st.write("Add pneumonia information.")
+    st.write("Pneumonia is an infection of the lungs that causes inflammation and fluid or pus to fill the air sacs (alveoli), making it harder for oxygen to pass into the bloodstream. On a chest X-ray, it typically appears as areas of increased opacity (white or cloudy patches) where air should normally look dark, often localized to a lobe. Clinically, it’s generally safer to be overly cautious and treat a suspected case of pneumonia, even if it turns out not to be present, because untreated pneumonia can rapidly worsen, leading to serious complications like respiratory failure or sepsis, whereas the risks of short-term treatment such as antibiotics when indicated are usually much lower than the potential harm of missing a true infection.")
 
 with tab4:
     st.write("Testing Tab.")

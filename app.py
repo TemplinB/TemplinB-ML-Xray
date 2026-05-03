@@ -314,11 +314,10 @@ with st.sidebar.expander("Important notes"):
 
 # ---------- Tabs ----------
 tab1, tab2, tab3, tab4= st.tabs(
-    ["Run Model", "About the Model", "About Pneumonia", "Trial"]
+    ["Diagnosis", "About the Model", "About Pneumonia", "Trial"]
 )
 
 with tab1:
-    st.write("Testing Tab.")
 
     if not uploaded_files:
         st.info("Use the sidebar to upload one or more X-ray images.")

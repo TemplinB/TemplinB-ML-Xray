@@ -16,9 +16,10 @@ TRIAL_MODEL_PATH = APP_DIR / "CNN_MNV2.keras"
 CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 
 MODEL_ACCURACY = {
-    "CNN Model": 0.8356,
-    "MobileNetV2 Trial Model": 0.9087
+    "Base Model": 0.8356,
+    "Transfer Learning Model": 0.9087
 }
+
 
 st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
 
@@ -280,7 +281,7 @@ uploaded_files = st.sidebar.file_uploader(
 
 selected_model_name = st.sidebar.radio(
     "Choose model",
-    ["CNN Model", "MobileNetV2 Trial Model"],
+    ["Base Model", "Transfer Learning Model"],
     index=0,
 )
 
@@ -394,7 +395,7 @@ tab1, tab2, tab3 = st.tabs(
 
 with tab1:
 
-    if selected_model_name == "CNN Model":
+    if selected_model_name == "Base Model":
         active_model = model
         active_image_size = MAIN_IMAGE_SIZE
         active_model_file = "CNN.keras"

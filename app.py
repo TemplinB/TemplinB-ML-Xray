@@ -15,6 +15,11 @@ TRIAL_MODEL_PATH = APP_DIR / "CNN_MNV2.keras"
 
 CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 
+MODEL_ACCURACY = {
+    "CNN Model": 0.83,
+    "MobileNetV2 Trial Model": 0.9087
+}
+
 st.set_page_config(page_title="Chest X-Ray Pneumonia Detector", layout="centered")
 
 
@@ -366,7 +371,7 @@ def show_model_results(model_to_use, image_size, image_index_key, tab_label, col
             st.success(f"Prediction: {results['predicted_label']}")
 
         col1, col2, col3 = st.columns(3)
-        col1.metric("Confidence", f"{results['confidence']:.2%}")
+        col1.metric("Model Accuracy", f"{MODEL_ACCURACY[selected_model_name]:.2%}")
         col2.metric("Pneumonia Probability", f"{results['pneumonia_prob']:.2%}")
         col3.metric("Normal Probability", f"{results['normal_prob']:.2%}")
 

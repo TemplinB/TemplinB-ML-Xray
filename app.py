@@ -17,7 +17,7 @@ CLASS_NAMES = {0: "NORMAL", 1: "PNEUMONIA"}
 
 MODEL_ACCURACY = {
     "Base Model": 0.8356,
-    "Transfer Learning Model": 0.9087
+    "Final Model": 0.9087
 }
 
 
@@ -313,7 +313,7 @@ uploaded_files = st.sidebar.file_uploader(
 
 selected_model_name = st.sidebar.radio(
     "Choose model",
-    ["Base Model", "Transfer Learning Model"],
+    ["Base Model", "Final Model"],
     index=0,
 )
 
@@ -452,7 +452,7 @@ with tab1:
 
 
 with tab2:
-    st.header("About the Model")
+    st.header("The Final Model")
     
     st.markdown("""
     &nbsp;&nbsp;&nbsp;&nbsp;The model that utilizes transfer learning is supported by the MobileNetV2 model under the ImageNet weights. This is a dataset comprised of 1.2 million images across 1000 categories. The benefit of transfer learning is this allows the model to focus on identifying the patterns in pneumonia without having to learn the basic lines, edges, and shapes of any object. For our model, the classification head has been stripped off the MobileNetV2 model meaning we are training the identification of pneumonia solely and not other everyday objects. The last 20 layers and weights of the MobileNetV2 model have been unfrozen to allow for a specific pneumonia model. 
@@ -483,6 +483,9 @@ with tab2:
     """, unsafe_allow_html=True)
 
 with tab3:
+
+    st.header("Pneumonia")
+    
     st.markdown("""
     &nbsp;&nbsp;&nbsp;&nbsp;Pneumonia is an infection of the lungs that causes inflammation and fluid or pus to fill the air sacs (alveoli), making it harder for oxygen to pass into the bloodstream. On a chest X-ray, it typically appears as areas of increased opacity (white or cloudy patches) where air should normally look dark, often localized to a lobe. Clinically, it's generally safer to be overly cautious and treat a suspected case of pneumonia, even if it turns out not to be present, because untreated pneumonia can rapidly worsen, leading to serious complications like respiratory failure or sepsis, whereas the risks of short-term treatment such as antibiotics when indicated are usually much lower than the potential harm of missing a true infection.
 

@@ -189,6 +189,15 @@ st.markdown(
     .stCaption {
         color: var(--muted);
     }
+
+    .stTabs [data-baseweb="tab-highlight"] {
+    background-color: #44C7B7;
+    }
+
+    .stTabs [data-baseweb="tab-border"] {
+        background-color: var(--border);
+    }
+    
     </style>
     """,
     unsafe_allow_html=True

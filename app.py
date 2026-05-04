@@ -197,6 +197,19 @@ st.markdown(
     .stTabs [data-baseweb="tab-border"] {
         background-color: var(--border);
     }
+
+    div[data-testid="stSlider"] [data-baseweb="slider"] [role="slider"] {
+        background-color: #44C7B7 !important;
+        border-color: #44C7B7 !important;
+    }
+
+    div[data-testid="stSlider"] [data-baseweb="slider"] div[data-testid="stThumbValue"] {
+        color: #44C7B7 !important;
+    }
+
+    div[data-testid="stSlider"] [data-baseweb="slider"] div[class*="Track"] div:first-child {
+        background-color: #44C7B7 !important;
+    }
     
     </style>
     """,

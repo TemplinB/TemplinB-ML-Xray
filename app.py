@@ -421,7 +421,34 @@ with tab1:
 
 with tab2:
     st.header("About the Model")
-    st.write("Add model description.")
+    
+    st.markdown("""
+    &nbsp;&nbsp;&nbsp;&nbsp;The model that utilizes transfer learning is supported by the MobileNetV2 model under the ImageNet weights. This is a dataset comprised of 1.2 million images across 1000 categories. The benefit of transfer learning is this allows the model to focus on identifying the patterns in pneumonia without having to learn the basic lines, edges, and shapes of any object. For our model, the classification head has been stripped off the MobileNetV2 model meaning we are training the identification of pneumonia solely and not other everyday objects. The last 20 layers and weights of the MobileNetV2 model have been unfrozen to allow for a specific pneumonia model. 
+
+    &nbsp;&nbsp;&nbsp;&nbsp;The head includes global average pooling to transform the output from MobileNetV2 into one long 1,280 value vector by taking the values from the 4x4 feature maps and averaging the values into a single number. The model then takes that long vector of single-value feature maps and inserts them into 128 neurons to find which combination of them detect pneumonia. An additional step or function of an L2 regularizer which takes place in the last dense layer that ensures each feature map value will remain small unless absolutely necessary. This forces the model to avoid overfitting on a few of the signals from the feature maps. Ultimately the model is trying to identify many paths to get to the pneumonia prediction. From there the model has a dropout level which shuts off half of the neurons meaning 64 patterns pass through to the final dense layer which produces a single value or probability that the image is pneumatic.
+
+    &nbsp;&nbsp;&nbsp;&nbsp;After completion of the basic architecture, the model can then be compiled. In this step, there are two adjustments that affect the model. The first is the loss function which in this case is binary cross entropy which is the learning aspect of the model. After the image goes through the flow of the model and the probability is given, the model then takes the probability and compares it to the actual prediction either 0 or 1. It then takes a logarithmic function to flag major error as high values and slight error as minor. If the value is off by any amount, the model engages in backpropagation. This means the model, starting at the final dense layer, goes back through each layer in reverse and assigns some numerical value for the amount of blame the specific entry in a node had in making the erroneous prediction. Once the blame is assigned, the model uses Adam to calculate the specific amount the weights need to be adjusted to make the model more accurate in the next prediction. Adam in particular looks at history of weight changes as well before adjusting.
+
+    &nbsp;&nbsp;&nbsp;&nbsp;For the training portion of the model, it takes 32 of the 5,216 images at a time and runs them through the model itself. After one batch of 32, the model calculates the error from the images and sends the next batch of 32. This repeats until all the images are seen from the total. This entire run is called an epoch. After this is finished, the model starts this process over with the same weights as the previous epoch and continues until all the fixed number of epochs are run. Another penalizer is the weight system which took the balance of the dataset into account for the loss calculations. Additionally, after each epoch a prediction check is made. This means using the current weights of the epoch, the test dataset is run through the model to calculate validation loss and accuracy which is seen in the model on the diagnosis tab.
+    """, unsafe_allow_html=True)
+
+    st.markdown("---")  # horizontal divider line
+    
+    st.subheader("References")
+    
+    st.markdown("""
+    **Dataset**  
+    Kermany, D. et al. (2018). *Identifying Medical Diagnoses and Treatable Diseases by Image-Based Deep Learning*. Cell.  
+    [Chest X-Ray Dataset on Kaggle](https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia)
+
+    **Model Architecture**  
+    Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018). *MobileNetV2: Inverted Residuals and Linear Bottlenecks*. CVPR.  
+    [MobileNetV2 Paper on ArXiv](https://arxiv.org/abs/1801.04381)
+
+    **Pretrained Weights**  
+    Deng, J. et al. (2009). *ImageNet: A large-scale hierarchical image database*. CVPR.  
+    [ImageNet](https://www.image-net.org)
+    """, unsafe_allow_html=True)
 
 with tab3:
     st.write("Pneumonia is an infection of the lungs that causes inflammation and fluid or pus to fill the air sacs (alveoli), making it harder for oxygen to pass into the bloodstream. On a chest X-ray, it typically appears as areas of increased opacity (white or cloudy patches) where air should normally look dark, often localized to a lobe. Clinically, it’s generally safer to be overly cautious and treat a suspected case of pneumonia, even if it turns out not to be present, because untreated pneumonia can rapidly worsen, leading to serious complications like respiratory failure or sepsis, whereas the risks of short-term treatment such as antibiotics when indicated are usually much lower than the potential harm of missing a true infection.")

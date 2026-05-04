@@ -198,16 +198,26 @@ st.markdown(
         background-color: var(--border);
     }
 
-    div[data-testid="stSlider"] [data-baseweb="slider"] [role="slider"] {
+    /* Slider track filled portion */
+    
+    div[data-testid="stSlider"] div[role="progressbar"] {
+        background-color: #44C7B7 !important;
+    }
+
+    /* Slider thumb */
+    div[data-testid="stSlider"] div[role="slider"] {
         background-color: #44C7B7 !important;
         border-color: #44C7B7 !important;
     }
 
-    div[data-testid="stSlider"] [data-baseweb="slider"] div[data-testid="stThumbValue"] {
-        color: #44C7B7 !important;
+    /* Radio button outer ring */
+    div[data-testid="stRadio"] div[data-baseweb="radio"] div:first-child {
+        border-color: #44C7B7 !important;
+        background-color: transparent !important;
     }
 
-    div[data-testid="stSlider"] [data-baseweb="slider"] div[class*="Track"] div:first-child {
+    /* Radio button filled inner dot */
+    div[data-testid="stRadio"] div[data-baseweb="radio"] div:first-child div {
         background-color: #44C7B7 !important;
     }
     

@@ -480,6 +480,9 @@ with tab2:
     **Pretrained Weights**  
     Deng, J. et al. (2009). *ImageNet: A large-scale hierarchical image database*. CVPR.  
     [ImageNet](https://www.image-net.org)
+
+    **Source Code**  
+    [GitHub Repository](https://github.com/TemplinB/TemplinB-ML-Xray)
     """, unsafe_allow_html=True)
 
 with tab3:
